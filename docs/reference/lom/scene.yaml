@@ -1,0 +1,70 @@
+object: Scene
+canonical_path: "live_set scenes N"
+summary: "A row of clip slots in the Session View matrix, with its own tempo and time-signature hooks."
+source_url: "https://docs.cycling74.com/apiref/lom/scene/"
+verified_in: "12.1"
+
+children:
+  - name: clip_slots
+    type: ClipSlot
+    cardinality: list
+    access: [read, observe]
+
+properties:
+  - name: color
+    type: int
+    access: [read, write, observe]
+  - name: color_index
+    type: long
+    access: [read, write, observe]
+  - name: is_empty
+    type: bool
+    access: [read, observe]
+    notes: "1 if every slot in the scene is empty."
+  - name: is_triggered
+    type: bool
+    access: [read, observe]
+  - name: name
+    type: symbol
+    access: [read, write, observe]
+  - name: tempo
+    type: float
+    access: [read, write, observe]
+    notes: "-1 means the scene doesn't set tempo. Otherwise the scene's tempo in BPM."
+  - name: tempo_enabled
+    type: bool
+    access: [read, write, observe]
+  - name: time_signature_numerator
+    type: int
+    access: [read, write, observe]
+  - name: time_signature_denominator
+    type: int
+    access: [read, write, observe]
+  - name: time_signature_enabled
+    type: bool
+    access: [read, write, observe]
+
+functions:
+  - name: fire
+    params: []
+    returns: null
+  - name: fire_as_selected
+    params: []
+    returns: null
+    notes: "Fires the scene and makes it the selected scene."
+  - name: set_fire_button_state
+    params:
+      - name: state
+        type: bool
+        optional: false
+    returns: null
+
+notes: |
+  Scene names that look like "120 BPM 4/4" have historically been special-cased
+  by Live — the scene's tempo and time signature were parsed from the name.
+  From Live 11+ this was replaced by explicit `tempo` / `tempo_enabled` /
+  `time_signature_*` properties. Prefer the explicit properties; name-parsing
+  is fragile and version-sensitive.
+
+  `fire()` on a scene fires every slot in the row, respecting each slot's
+  state (empty slots fire their track's stop button if one exists).

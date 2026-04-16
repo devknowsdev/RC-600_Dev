@@ -1,0 +1,379 @@
+object: Song
+canonical_path: "live_set"
+summary: "The current Live Set. Root for most Live API work."
+source_url: "https://docs.cycling74.com/apiref/lom/song/"
+verified_in: "12.1"
+
+children:
+  - name: cue_points
+    type: CuePoint
+    cardinality: list
+    access: [read, observe]
+    notes: "Markers in the Arrangement to jump to."
+  - name: return_tracks
+    type: Track
+    cardinality: list
+    access: [read, observe]
+  - name: scenes
+    type: Scene
+    cardinality: list
+    access: [read, observe]
+  - name: tracks
+    type: Track
+    cardinality: list
+    access: [read, observe]
+    notes: "Audio + MIDI + group tracks, in their current display order."
+  - name: visible_tracks
+    type: Track
+    cardinality: list
+    access: [read, observe]
+    notes: "Excludes tracks hidden by a folded group. Scrolled-out tracks still count as visible."
+  - name: master_track
+    type: Track
+    cardinality: one
+    access: [read]
+  - name: view
+    type: Song.View
+    cardinality: one
+    access: [read]
+  - name: groove_pool
+    type: GroovePool
+    cardinality: one
+    access: [read]
+    available_since: "11.0"
+  - name: tuning_system
+    type: TuningSystem
+    cardinality: one
+    access: [read, observe]
+    available_since: "12.0"
+
+properties:
+  - name: appointed_device
+    type: Device
+    access: [read, observe]
+    notes: "The device marked with the blue hand, used by control surfaces that don't pick their own."
+  - name: arrangement_overdub
+    type: bool
+    access: [read, write, observe]
+  - name: back_to_arranger
+    type: bool
+    access: [read, write, observe]
+    notes: "Set to 0 to make Live resume playing the arrangement."
+  - name: can_capture_midi
+    type: bool
+    access: [read, observe]
+  - name: can_jump_to_next_cue
+    type: bool
+    access: [read, observe]
+  - name: can_jump_to_prev_cue
+    type: bool
+    access: [read, observe]
+  - name: can_redo
+    type: bool
+    access: [read]
+  - name: can_undo
+    type: bool
+    access: [read]
+  - name: clip_trigger_quantization
+    type: int
+    access: [read, write, observe]
+    notes: "Indexed enum: 0=None, 1=8 Bars, 2=4 Bars, 3=2 Bars, 4=1 Bar, 5=1/2, 6=1/2T, 7=1/4, 8=1/4T, 9=1/8, 10=1/8T, 11=1/16, 12=1/16T, 13=1/32."
+  - name: count_in_duration
+    type: int
+    access: [read, observe]
+    notes: "0=None, 1=1 Bar, 2=2 Bars, 3=4 Bars."
+  - name: current_song_time
+    type: float
+    access: [read, write, observe]
+    notes: "In beats."
+  - name: exclusive_arm
+    type: bool
+    access: [read]
+    notes: "Reflects Live preference; not settable."
+  - name: exclusive_solo
+    type: bool
+    access: [read]
+  - name: file_path
+    type: symbol
+    access: [read]
+    notes: "Empty string if the set has not been saved. OS-native format."
+  - name: groove_amount
+    type: float
+    access: [read, write, observe]
+    notes: "Range 0.0 – 1.0."
+  - name: is_ableton_link_enabled
+    type: bool
+    access: [read, write, observe]
+    notes: "The Link toggle in the transport bar must be visible in preferences for this to be effective."
+  - name: is_ableton_link_start_stop_sync_enabled
+    type: bool
+    access: [read, write, observe]
+  - name: is_counting_in
+    type: bool
+    access: [read, observe]
+  - name: is_playing
+    type: bool
+    access: [read, write, observe]
+    notes: "Transport is running."
+  - name: last_event_time
+    type: float
+    access: [read]
+  - name: loop
+    type: bool
+    access: [read, write, observe]
+    notes: "Arrangement loop enabled."
+  - name: loop_length
+    type: float
+    access: [read, write, observe]
+  - name: loop_start
+    type: float
+    access: [read, write, observe]
+  - name: metronome
+    type: bool
+    access: [read, write, observe]
+  - name: midi_recording_quantization
+    type: int
+    access: [read, write, observe]
+  - name: name
+    type: symbol
+    access: [read]
+    notes: "Empty if the set has not been saved."
+  - name: nudge_down
+    type: bool
+    access: [read, write, observe]
+  - name: nudge_up
+    type: bool
+    access: [read, write, observe]
+  - name: tempo_follower_enabled
+    type: bool
+    access: [read, write, observe]
+    notes: "Tempo Follower toggle must be visible in preferences to take effect."
+  - name: overdub
+    type: bool
+    access: [read, write, observe]
+  - name: punch_in
+    type: bool
+    access: [read, write, observe]
+  - name: punch_out
+    type: bool
+    access: [read, write, observe]
+  - name: re_enable_automation_enabled
+    type: bool
+    access: [read, observe]
+  - name: record_mode
+    type: bool
+    access: [read, write, observe]
+    notes: "Arrangement Record button state."
+  - name: root_note
+    type: int
+    access: [read, write, observe]
+    notes: "0=C, 11=B."
+  - name: scale_intervals
+    type: list
+    access: [read, observe]
+    notes: "List of ints representing intervals in the current scale."
+  - name: scale_mode
+    type: bool
+    access: [read, write, observe]
+  - name: scale_name
+    type: unicode
+    access: [read, write, observe]
+  - name: select_on_launch
+    type: bool
+    access: [read]
+  - name: session_automation_record
+    type: bool
+    access: [read, write, observe]
+  - name: session_record
+    type: bool
+    access: [read, write, observe]
+  - name: session_record_status
+    type: int
+    access: [read, observe]
+  - name: signature_denominator
+    type: int
+    access: [read, write, observe]
+  - name: signature_numerator
+    type: int
+    access: [read, write, observe]
+  - name: song_length
+    type: float
+    access: [read, observe]
+  - name: start_time
+    type: float
+    access: [read, write, observe]
+  - name: swing_amount
+    type: float
+    access: [read, write, observe]
+    notes: "Range 0.0 – 1.0. Affects MIDI Recording Quantization and all direct Clip.quantize calls."
+  - name: tempo
+    type: float
+    access: [read, write, observe]
+    notes: "BPM, 20.0 – 999.0. May be automated."
+
+functions:
+  - name: capture_and_insert_scene
+    params: []
+    returns: null
+  - name: capture_midi
+    params:
+      - name: destination
+        type: int
+        optional: true
+        notes: "0=auto, 1=session, 2=arrangement."
+    returns: null
+  - name: continue_playing
+    params: []
+    returns: null
+  - name: create_audio_track
+    params:
+      - name: index
+        type: int
+        optional: false
+        notes: "-1 means append at end. Valid 0..len(tracks) otherwise."
+    returns: null
+  - name: create_midi_track
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: create_return_track
+    params: []
+    returns: null
+  - name: create_scene
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: "Scene (the new one)"
+  - name: delete_scene
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: delete_track
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: delete_return_track
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: duplicate_scene
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: duplicate_track
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: find_device_position
+    params:
+      - name: device
+        type: live_object
+        optional: false
+      - name: target
+        type: live_object
+        optional: false
+      - name: target_position
+        type: int
+        optional: false
+    returns: "int — nearest valid insertion position"
+  - name: force_link_beat_time
+    params: []
+    returns: null
+  - name: get_beats_loop_length
+    params: []
+    returns: "symbol 'bars.beats.sixteenths.ticks'"
+  - name: get_beats_loop_start
+    params: []
+    returns: "symbol 'bars.beats.sixteenths.ticks'"
+  - name: get_current_beats_song_time
+    params: []
+    returns: "symbol 'bars.beats.sixteenths.ticks'"
+  - name: get_current_smpte_song_time
+    params:
+      - name: format
+        type: int
+        optional: false
+        notes: "0=ms, 1=Smpte24, 2=Smpte25, 3=Smpte30, 4=Smpte30Drop, 5=Smpte29."
+    returns: "symbol 'hours:min:sec'"
+  - name: is_cue_point_selected
+    params: []
+    returns: "bool"
+  - name: jump_by
+    params:
+      - name: beats
+        type: float
+        optional: false
+    returns: null
+  - name: jump_to_next_cue
+    params: []
+    returns: null
+  - name: jump_to_prev_cue
+    params: []
+    returns: null
+  - name: move_device
+    params:
+      - name: device
+        type: live_object
+        optional: false
+      - name: target
+        type: live_object
+        optional: false
+      - name: target_position
+        type: int
+        optional: false
+    returns: "int — actual insertion position"
+  - name: play_selection
+    params: []
+    returns: null
+  - name: re_enable_automation
+    params: []
+    returns: null
+  - name: redo
+    params: []
+    returns: null
+  - name: scrub_by
+    params:
+      - name: beats
+        type: float
+        optional: false
+    returns: null
+  - name: set_or_delete_cue
+    params: []
+    returns: null
+  - name: start_playing
+    params: []
+    returns: null
+  - name: stop_all_clips
+    params: []
+    returns: null
+  - name: stop_playing
+    params: []
+    returns: null
+  - name: tap_tempo
+    params: []
+    returns: null
+  - name: trigger_session_record
+    params: []
+    returns: null
+  - name: undo
+    params: []
+    returns: null
+
+notes: |
+  The Song is the most common entry point. Almost every utility ends up holding
+  a `new LiveAPI("live_set")` at the top of its observer graph.
+  Transport methods (`start_playing`, `stop_playing`, `continue_playing`,
+  `jump_by`) are not undoable, mirroring Live's GUI behavior.

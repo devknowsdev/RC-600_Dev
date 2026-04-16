@@ -1,0 +1,265 @@
+object: Track
+canonical_path: "live_set tracks N"
+summary: "A track in Live — audio, MIDI, return, or master. Not all properties apply to all track types."
+source_url: "https://docs.cycling74.com/apiref/lom/track/"
+verified_in: "12.1"
+
+children:
+  - name: take_lanes
+    type: TakeLane
+    cardinality: list
+    access: [read, observe]
+    available_since: "11.0"
+  - name: clip_slots
+    type: ClipSlot
+    cardinality: list
+    access: [read, observe]
+    notes: "Session View clip slots. Not present on return / master tracks."
+  - name: arrangement_clips
+    type: Clip
+    cardinality: list
+    access: [read, observe]
+    available_since: "11.0"
+  - name: devices
+    type: Device
+    cardinality: list
+    access: [read, observe]
+    notes: "Includes the mixer device at the end of the chain."
+  - name: group_track
+    type: Track
+    cardinality: one
+    access: [read]
+    notes: "If this track is grouped, returns the group. Otherwise returns id 0."
+  - name: mixer_device
+    type: MixerDevice
+    cardinality: one
+    access: [read]
+    notes: "Every track has a mixer_device. Volume, pan, sends, track activator are its children."
+  - name: view
+    type: Track.View
+    cardinality: one
+    access: [read]
+
+properties:
+  - name: arm
+    type: bool
+    access: [read, write, observe]
+    notes: "Not on return / master."
+  - name: available_input_routing_channels
+    type: dictionary
+    access: [read, observe]
+    notes: "Audio / MIDI tracks only."
+  - name: available_input_routing_types
+    type: dictionary
+    access: [read, observe]
+    notes: "Audio / MIDI tracks only."
+  - name: available_output_routing_channels
+    type: dictionary
+    access: [read, observe]
+    notes: "Not on master."
+  - name: available_output_routing_types
+    type: dictionary
+    access: [read, observe]
+    notes: "Not on master."
+  - name: back_to_arranger
+    type: bool
+    access: [read, write, observe]
+    notes: "Per-track single-track Back to Arrangement state. Group tracks propagate to children."
+  - name: can_be_armed
+    type: bool
+    access: [read]
+  - name: can_be_frozen
+    type: bool
+    access: [read]
+  - name: can_show_chains
+    type: bool
+    access: [read]
+  - name: color
+    type: int
+    access: [read, write, observe]
+    notes: "0x00rrggbb. When setting, nearest color from the chooser is used."
+  - name: color_index
+    type: long
+    access: [read, write, observe]
+  - name: fired_slot_index
+    type: int
+    access: [read, observe]
+    notes: "Blinking clip slot. -1 = none fired, -2 = Clip Stop Button fired. Not on return / master."
+  - name: fold_state
+    type: int
+    access: [read, write]
+    notes: "Only valid when is_foldable == 1. 0 = unfolded, 1 = folded."
+  - name: has_audio_input
+    type: bool
+    access: [read]
+  - name: has_audio_output
+    type: bool
+    access: [read]
+    notes: "1 for audio tracks and MIDI tracks with instruments."
+  - name: has_midi_input
+    type: bool
+    access: [read]
+  - name: has_midi_output
+    type: bool
+    access: [read]
+    notes: "1 for MIDI tracks with no instruments and no audio effects."
+  - name: implicit_arm
+    type: bool
+    access: [read, write, observe]
+    notes: "A secondary arm state used by Push."
+  - name: input_meter_left
+    type: float
+    access: [read, observe]
+    notes: "0.0–1.0. Audio output tracks only. Meters add significant GUI load."
+  - name: input_meter_level
+    type: float
+    access: [read, observe]
+  - name: input_meter_right
+    type: float
+    access: [read, observe]
+  - name: input_routing_channel
+    type: dictionary
+    access: [read, write, observe]
+  - name: input_routing_type
+    type: dictionary
+    access: [read, write, observe]
+  - name: is_foldable
+    type: bool
+    access: [read]
+    notes: "Group tracks return 1. Instrument / Drum Racks return 0 even though they can open/close — a known limitation."
+  - name: is_frozen
+    type: bool
+    access: [read, observe]
+  - name: is_grouped
+    type: bool
+    access: [read]
+  - name: is_part_of_selection
+    type: bool
+    access: [read]
+  - name: is_showing_chains
+    type: bool
+    access: [read, write, observe]
+  - name: is_visible
+    type: bool
+    access: [read]
+  - name: mute
+    type: bool
+    access: [read, write, observe]
+    notes: "Not on master."
+  - name: muted_via_solo
+    type: bool
+    access: [read, observe]
+  - name: name
+    type: symbol
+    access: [read, write, observe]
+    notes: "As shown in the track header."
+  - name: output_meter_left
+    type: float
+    access: [read, observe]
+    notes: "Meters add significant GUI load."
+  - name: output_meter_level
+    type: float
+    access: [read, observe]
+  - name: output_meter_right
+    type: float
+    access: [read, observe]
+  - name: performance_impact
+    type: float
+    access: [read, observe]
+  - name: output_routing_channel
+    type: dictionary
+    access: [read, write, observe]
+  - name: output_routing_type
+    type: dictionary
+    access: [read, write, observe]
+  - name: playing_slot_index
+    type: int
+    access: [read, observe]
+    notes: "First slot is 0. -2 = Clip Stop slot fired. -1 = Arrangement recording with no Session clip playing. Not on return / master."
+  - name: solo
+    type: bool
+    access: [read, write, observe]
+    notes: "Setting bypasses the exclusive Solo logic — unsolo other tracks manually if needed."
+
+functions:
+  - name: create_audio_clip
+    params:
+      - name: file_path
+        type: symbol
+        optional: false
+      - name: position
+        type: float
+        optional: false
+        notes: "Arrangement position. Range [0., 1576800]."
+    returns: null
+    notes: "Audio tracks only. Fails on frozen tracks or during recording."
+  - name: create_midi_clip
+    params:
+      - name: start_time
+        type: float
+        optional: false
+      - name: length
+        type: float
+        optional: false
+    returns: null
+    notes: "MIDI tracks only. Arrangement."
+  - name: create_take_lane
+    params: []
+    returns: null
+    available_since: "11.0"
+  - name: delete_clip
+    params:
+      - name: clip
+        type: live_object
+        optional: false
+    returns: null
+  - name: delete_device
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: duplicate_clip_slot
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+  - name: duplicate_clip_to_arrangement
+    params:
+      - name: clip
+        type: live_object
+        optional: false
+      - name: destination_time
+        type: float
+        optional: false
+    returns: null
+  - name: insert_device
+    params:
+      - name: device_name
+        type: symbol
+        optional: false
+      - name: target_index
+        type: int
+        optional: true
+    returns: null
+    available_since: "12.3"
+    notes: "Native Live devices only — Max for Live devices and plug-ins not supported. Index constraints mirror the GUI rules (e.g. can't place a MIDI effect after an instrument)."
+  - name: jump_in_running_session_clip
+    params:
+      - name: beats
+        type: float
+        optional: false
+    returns: null
+  - name: stop_all_clips
+    params: []
+    returns: null
+
+notes: |
+  Devices list includes the mixer_device. When iterating devices by index,
+  positions 0..getcount(devices)-1 are user-visible devices in chain order.
+  The mixer_device is not at an index in that list — it's reached as a direct
+  named child, not by position.
+
+  Mixer parameters (volume, panning, sends, track_activator) are children of
+  `mixer_device`, not path segments on the track itself. See mixerdevice.yaml.

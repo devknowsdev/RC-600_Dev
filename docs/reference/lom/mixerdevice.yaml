@@ -1,0 +1,95 @@
+object: MixerDevice
+canonical_path: "live_set tracks N mixer_device"
+summary: "Per-track mixer device exposing volume, pan, sends, and track activator as DeviceParameter children."
+source_url: "https://docs.cycling74.com/apiref/lom/mixerdevice/"
+verified_in: "12.1"
+
+children:
+  - name: sends
+    type: DeviceParameter
+    cardinality: list
+    access: [read, observe]
+    notes: "One send DeviceParameter per return track. Access: `mixer_device sends N`."
+  - name: cue_volume
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "Master track only."
+  - name: crossfader
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "Master track only."
+  - name: left_split_stereo
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "Active when panning_mode == 1 (Split Stereo)."
+  - name: panning
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+  - name: right_split_stereo
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "Active when panning_mode == 1 (Split Stereo)."
+  - name: song_tempo
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "Master track only. Reaches Song tempo as a DeviceParameter for automation purposes."
+  - name: track_activator
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "The on/off switch for the track."
+  - name: volume
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+
+properties:
+  - name: crossfade_assign
+    type: int
+    access: [read, write, observe]
+    notes: "0 = A, 1 = none, 2 = B. Not on master."
+  - name: panning_mode
+    type: int
+    access: [read, write, observe]
+    notes: "0 = Stereo, 1 = Split Stereo."
+
+functions: []
+
+notes: |
+  **Critical mental model correction.** The mixer's volume, pan, sends, etc.
+  are NOT properties of the track or of MixerDevice itself — they are
+  DeviceParameter *children*. To read track 0's volume:
+
+      live_set tracks 0 mixer_device volume          <- reaches the DeviceParameter
+      then get "value" on that DeviceParameter       <- reads the actual value
+
+  A previous version of this repo wrote `live_set tracks 0 mixer_device volume`
+  as if `volume` were a property accessible by `get volume` on the MixerDevice.
+  It is not. The path walks to the volume child (a DeviceParameter), and you
+  query that DeviceParameter's `value` property.
+
+  Example in JS:
+
+      var vol = new LiveAPI("live_set tracks 0 mixer_device volume");
+      var internal = vol.get("value");         // 0.0..1.0
+      var display  = vol.get("display_value"); // e.g. "-6.0 dB"
+      vol.set("value", 0.85);                  // creates an undo entry
+
+  Sends are addressed by return-track index:
+
+      live_set tracks 0 mixer_device sends 0
+
+  To know how many sends exist:
+
+      var n = new LiveAPI("live_set tracks 0 mixer_device").getcount("sends");
+
+  panning_mode is one of the few fields on the MixerDevice itself (not a
+  child). Reading the active pan parameter requires checking panning_mode
+  first: in mode 0 you want `panning`; in mode 1 you want both
+  `left_split_stereo` and `right_split_stereo`.

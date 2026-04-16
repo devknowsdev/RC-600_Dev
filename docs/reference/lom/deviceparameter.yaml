@@ -1,0 +1,87 @@
+object: DeviceParameter
+canonical_path: "live_set tracks N devices M parameters L"
+summary: "An automatable parameter within a device. Mixer controls, macros, and per-device knobs all surface as DeviceParameter."
+source_url: "https://docs.cycling74.com/apiref/lom/deviceparameter/"
+verified_in: "12.1"
+
+children: []
+
+properties:
+  - name: automation_state
+    type: int
+    access: [read, observe]
+    notes: "0 = no automation, 1 = automation active, 2 = automation overridden."
+  - name: default_value
+    type: float
+    access: [read]
+    notes: "Only for non-quantized parameters (is_quantized == 0)."
+  - name: is_enabled
+    type: bool
+    access: [read]
+    notes: "0 if the parameter is disabled — typically because it's macro-controlled, live.remote~ controlled, or otherwise locked."
+  - name: is_quantized
+    type: bool
+    access: [read]
+    notes: "1 for boolean and enum-style params; 0 for int/float. Some params that look quantized in the UI (e.g. MidiPitch.Pitch) are actually continuous."
+  - name: max
+    type: float
+    access: [read]
+  - name: min
+    type: float
+    access: [read]
+  - name: name
+    type: symbol
+    access: [read]
+    notes: "Short name as shown in the closed automation chooser. For Macros, this is the user-assigned name."
+  - name: original_name
+    type: symbol
+    access: [read]
+    notes: "For Macro parameters, the generic name before the user assignment (e.g. 'Macro 1')."
+  - name: state
+    type: int
+    access: [read, observe]
+    notes: "0 = active and changeable, 1 = changeable but inaudible, 2 = cannot be changed."
+  - name: value
+    type: float
+    access: [read, write, observe]
+    notes: "Internal numeric value between min and max. For display, use display_value."
+  - name: display_value
+    type: float
+    access: [read, observe]
+    notes: "The value as shown in the GUI. For quantized params this is the index; for continuous, the same numeric as value."
+  - name: value_items
+    type: StringVector
+    access: [read]
+    notes: "List of possible value labels. Only for quantized parameters."
+
+functions:
+  - name: re_enable_automation
+    params: []
+    returns: null
+    notes: "Re-enables automation for this specific parameter after an override."
+  - name: str_for_value
+    params:
+      - name: value
+        type: float
+        optional: false
+    returns: "symbol — the string representation of the given value"
+    notes: "Useful for previewing what a value would display as, without setting it."
+  - name: __str__
+    params: []
+    returns: "symbol — string rep of the current value"
+
+notes: |
+  To modulate a parameter at audio rate, do NOT set `value` repeatedly — that
+  floods undo and creates an update storm. Instead, send the parameter's object
+  ID to [live.remote~], which writes without generating undo entries or
+  persisting state. This is the correct pattern for internal modulation. See
+  docs/principles/undo-discipline.md.
+
+  The `name` property returns the user-assigned name for Macros. To detect
+  whether a Macro has been renamed, compare `name` against `original_name`.
+
+  Not all parameters can be written. Check `is_enabled` and `state` before
+  calling set. Writes to disabled parameters silently no-op.
+
+  `value_items` is the mechanism for building a UI that shows the actual string
+  labels for enum-style parameters (filter types, LFO waveforms, etc.).

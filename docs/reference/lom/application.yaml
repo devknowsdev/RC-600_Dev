@@ -1,0 +1,69 @@
+object: Application
+canonical_path: "live_app"
+summary: "The Live application itself. Version info, preferences-adjacent state, dialog handling."
+source_url: "https://docs.cycling74.com/apiref/lom/application/"
+verified_in: "12.1"
+
+children:
+  - name: view
+    type: Application.View
+    cardinality: one
+    access: [read]
+  - name: control_surfaces
+    type: ControlSurface
+    cardinality: list
+    access: [read]
+    notes: "The 6 control surface slots from Live's preferences. Slots with 'None' selected or inactive scripts return id 0."
+
+properties:
+  - name: current_dialog_button_count
+    type: int
+    access: [read]
+    notes: "Number of buttons in the currently shown dialog, if any."
+  - name: current_dialog_message
+    type: unicode
+    access: [read]
+    notes: "Empty if no dialog is shown."
+  - name: open_dialog_count
+    type: int
+    access: [read]
+  - name: average_process_usage
+    type: float
+    access: [read, observe]
+    notes: "Average CPU load — audio processing. Different from Live's total CPU."
+  - name: peak_process_usage
+    type: float
+    access: [read, observe]
+
+functions:
+  - name: get_major_version
+    params: []
+    returns: "int"
+  - name: get_minor_version
+    params: []
+    returns: "int"
+  - name: get_bugfix_version
+    params: []
+    returns: "int"
+  - name: get_document
+    params: []
+    returns: "Song — the current Live Set"
+  - name: press_current_dialog_button
+    params:
+      - name: index
+        type: int
+        optional: false
+    returns: null
+
+notes: |
+  `live_app` is useful for version detection — call the three version getters
+  to branch on Live version. For example:
+
+      var app = new LiveAPI("live_app");
+      var major = app.call("get_major_version");
+      var minor = app.call("get_minor_version");
+      // branch on Live 11 vs 12 behaviors
+
+  Control surfaces are enumerated 0..5. Each slot may be None (id 0), a valid
+  ControlSurface object, or — for Push2 when no hardware is connected — still
+  id 0 even though Push2 is selected in preferences.

@@ -1,0 +1,117 @@
+object: ClipSlot
+canonical_path: "live_set tracks N clip_slots M"
+summary: "An entry in the Session View matrix. Holds at most one clip and has its own playback state."
+source_url: "https://docs.cycling74.com/apiref/lom/clipslot/"
+verified_in: "12.1"
+
+children:
+  - name: clip
+    type: Clip
+    cardinality: one
+    access: [read]
+    notes: "Returns id 0 if the slot is empty. Always check `has_clip` or guard against id 0 before walking to the clip."
+
+properties:
+  - name: color
+    type: long
+    access: [read, observe]
+    notes: "For group-track slots, the color of the first contained clip."
+  - name: color_index
+    type: long
+    access: [read, observe]
+  - name: controls_other_clips
+    type: bool
+    access: [read, observe]
+    notes: "1 for a group-track slot that has non-deactivated clips in tracks within its group. Empty slots don't count."
+  - name: has_clip
+    type: bool
+    access: [read, observe]
+  - name: has_stop_button
+    type: bool
+    access: [read, write, observe]
+    notes: "Whether this slot has a stop button that will stop the track (or the tracks in a group)."
+  - name: is_group_slot
+    type: bool
+    access: [read]
+  - name: is_playing
+    type: bool
+    access: [read]
+    notes: "1 iff playing_status != 0. Not independently observable — observe playing_status or the contained Clip's is_playing."
+  - name: is_recording
+    type: bool
+    access: [read]
+    notes: "1 iff playing_status == 2."
+  - name: is_triggered
+    type: bool
+    access: [read, observe]
+    notes: "1 while the launch/stop/record button is blinking."
+  - name: playing_status
+    type: int
+    access: [read, observe]
+    notes: "Group-track relevant. 0 = all stopped/empty, 1 = at least one clip playing, 2 = at least one playing or recording. 0 for non-group slots."
+  - name: will_record_on_start
+    type: bool
+    access: [read]
+
+functions:
+  - name: create_audio_clip
+    params:
+      - name: path
+        type: symbol
+        optional: false
+    returns: null
+    notes: "Audio track slots only. Fails on frozen tracks."
+  - name: create_clip
+    params:
+      - name: length
+        type: float
+        optional: false
+        notes: "In beats, must be > 0."
+    returns: null
+    notes: "Empty MIDI-track slots only."
+  - name: delete_clip
+    params: []
+    returns: null
+  - name: duplicate_clip_to
+    params:
+      - name: target_clip_slot
+        type: live_object
+        optional: false
+    returns: null
+    notes: "Overrides the target slot's clip if it has one."
+  - name: fire
+    params:
+      - name: record_length
+        type: float
+        optional: true
+        notes: "In beats. Forces a fixed-length record."
+      - name: launch_quantization
+        type: int
+        optional: true
+        notes: "Overrides the global quantization for this launch."
+    returns: null
+    notes: "Fires the clip, triggers the stop button, or starts recording if armed — depending on slot state."
+  - name: set_fire_button_state
+    params:
+      - name: state
+        type: bool
+        optional: false
+    returns: null
+    notes: "Simulates holding the launch button (for legato or extended launch behavior) until set to 0."
+  - name: stop
+    params: []
+    returns: null
+
+notes: |
+  The is_playing and is_recording properties exist but are marked read-only
+  and not observable — they're derived from playing_status. If you want to
+  react to a slot starting or stopping playback, observe `playing_status`
+  instead, or drop down to the contained Clip and observe its `is_playing`.
+
+  `has_clip` is the correct guard before walking to `clip`. Observing
+  `has_clip` lets you react to slots gaining or losing content (e.g. after
+  record or delete).
+
+  `fire()` with no arguments uses Live's current global quantization and the
+  slot's existing record length behavior. Pass `record_length` only when you
+  want deterministic fixed-length recording.

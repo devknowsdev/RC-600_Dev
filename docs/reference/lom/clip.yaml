@@ -1,0 +1,190 @@
+object: Clip
+canonical_path: "live_set tracks N clip_slots M clip; live_set tracks N arrangement_clips L"
+summary: "A clip in Live — audio or MIDI, Session or Arrangement."
+source_url: "https://docs.cycling74.com/apiref/lom/clip/"
+verified_in: "12.1"
+
+children:
+  - name: view
+    type: Clip.View
+    cardinality: one
+    access: [read]
+
+properties:
+  - name: name
+    type: symbol
+    access: [read, write, observe]
+  - name: color
+    type: int
+    access: [read, write, observe]
+  - name: color_index
+    type: long
+    access: [read, write, observe]
+  - name: is_audio_clip
+    type: bool
+    access: [read]
+  - name: is_midi_clip
+    type: bool
+    access: [read]
+  - name: is_arrangement_clip
+    type: bool
+    access: [read]
+  - name: is_playing
+    type: bool
+    access: [read, observe]
+  - name: is_recording
+    type: bool
+    access: [read, observe]
+  - name: is_triggered
+    type: bool
+    access: [read, observe]
+  - name: is_overdubbing
+    type: bool
+    access: [read, observe]
+  - name: looping
+    type: bool
+    access: [read, write, observe]
+  - name: loop_start
+    type: float
+    access: [read, write, observe]
+    notes: "Beats for MIDI / warped audio; seconds for unwarped audio (0 = first sample)."
+  - name: loop_end
+    type: float
+    access: [read, write, observe]
+  - name: start_marker
+    type: float
+    access: [read, write, observe]
+  - name: end_marker
+    type: float
+    access: [read, write, observe]
+  - name: start_time
+    type: float
+    access: [read, write, observe]
+    notes: "Arrangement clips only."
+  - name: end_time
+    type: float
+    access: [read, observe]
+    notes: "Arrangement clips only."
+  - name: length
+    type: float
+    access: [read, observe]
+    notes: "For looped clips, the loop length. For unlooped, the distance from start to end marker."
+  - name: signature_numerator
+    type: int
+    access: [read, write, observe]
+  - name: signature_denominator
+    type: int
+    access: [read, write, observe]
+  - name: playing_position
+    type: float
+    access: [read, observe]
+  - name: muted
+    type: bool
+    access: [read, write, observe]
+  - name: launch_quantization
+    type: int
+    access: [read, write, observe]
+    notes: "0 = Global (default), 1 = None, 2–14 = specific values. See Clip LOM page."
+    available_since: "11.0"
+  - name: warping
+    type: bool
+    access: [read, write, observe]
+    notes: "Audio clips only."
+  - name: warp_mode
+    type: int
+    access: [read, write, observe]
+    notes: "0=Beats, 1=Tones, 2=Texture, 3=Re-Pitch, 4=Complex, 5=REX, 6=Complex Pro."
+  - name: pitch_coarse
+    type: int
+    access: [read, write, observe]
+    notes: "Audio clips only. Semitones."
+  - name: pitch_fine
+    type: float
+    access: [read, write, observe]
+  - name: gain
+    type: float
+    access: [read, write, observe]
+  - name: file_path
+    type: symbol
+    access: [read]
+    notes: "Audio clips only."
+
+functions:
+  - name: fire
+    params: []
+    returns: null
+  - name: stop
+    params: []
+    returns: null
+  - name: quantize
+    params:
+      - name: quantization_grid
+        type: int
+        optional: false
+      - name: amount
+        type: float
+        optional: false
+    returns: null
+  - name: get_notes_extended
+    params:
+      - name: from_pitch
+        type: int
+        optional: false
+      - name: pitch_span
+        type: int
+        optional: false
+      - name: from_time
+        type: float
+        optional: false
+      - name: time_span
+        type: float
+        optional: false
+    returns: "note list (new format)"
+    notes: "MIDI clips only. Replaces the legacy get_notes — use this for Live 11+."
+    available_since: "11.0"
+  - name: add_new_notes
+    params:
+      - name: notes_dict
+        type: dictionary
+        optional: false
+    returns: null
+    available_since: "11.0"
+  - name: remove_notes_extended
+    params:
+      - name: from_pitch
+        type: int
+        optional: false
+      - name: pitch_span
+        type: int
+        optional: false
+      - name: from_time
+        type: float
+        optional: false
+      - name: time_span
+        type: float
+        optional: false
+    returns: null
+    available_since: "11.0"
+  - name: apply_note_modifications
+    params:
+      - name: notes_dict
+        type: dictionary
+        optional: false
+    returns: null
+    available_since: "11.0"
+
+notes: |
+  The Clip class has substantially more methods than listed — particularly for
+  MIDI note manipulation, envelopes, and automation. The listing here covers
+  the operations most commonly needed for utility / assistant workflows.
+  Consult the official LOM page for the complete list when working in depth.
+
+  In Live 11 the MIDI note API was modernized. Use `get_notes_extended`,
+  `add_new_notes`, `remove_notes_extended`, and `apply_note_modifications`
+  rather than the legacy `get_notes` / `set_notes` / `replace_selected_notes`
+  set. The extended API uses dictionaries with per-note ids, enabling
+  non-destructive modification.
+
+  Warp mode indices are stable across the 12.x line, but new warp engines have
+  been added over time — verify against the current LOM when the exact set
+  matters.

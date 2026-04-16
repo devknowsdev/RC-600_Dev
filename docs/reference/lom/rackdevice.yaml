@@ -1,0 +1,69 @@
+object: RackDevice
+canonical_path: "live_set tracks N devices M (when device is a Rack)"
+summary: "Instrument Rack, Audio Effect Rack, MIDI Effect Rack, or Drum Rack. Extends Device with chains and macros."
+source_url: "https://docs.cycling74.com/apiref/lom/rackdevice/"
+verified_in: "12.1"
+
+children:
+  - name: chains
+    type: Chain
+    cardinality: list
+    access: [read, observe]
+    notes: "Each chain contains its own list of devices. For Drum Racks, see drum_pads also."
+  - name: return_chains
+    type: Chain
+    cardinality: list
+    access: [read, observe]
+    notes: "Chains marked as returns (for audio effect sends within the rack)."
+  - name: drum_pads
+    type: DrumPad
+    cardinality: list
+    access: [read, observe]
+    notes: "Drum Racks only. Always 128 pads indexed 0..127 (one per MIDI note)."
+  - name: visible_drum_pads
+    type: DrumPad
+    cardinality: list
+    access: [read, observe]
+    notes: "Drum Racks only. The 16 pads currently shown in the pad matrix based on scroll position."
+  - name: view
+    type: RackDevice.View
+    cardinality: one
+    access: [read]
+
+properties:
+  - name: has_drum_pads
+    type: bool
+    access: [read]
+  - name: has_macro_mappings
+    type: bool
+    access: [read, observe]
+  - name: is_showing_chains
+    type: bool
+    access: [read, write, observe]
+  - name: macros_mapped_parameters
+    type: list
+    access: [read, observe]
+    notes: "List of parameters currently mapped to macros."
+
+functions:
+  - name: copy_pad
+    params:
+      - name: source_pad
+        type: DrumPad
+        optional: false
+      - name: target_pad
+        type: DrumPad
+        optional: false
+    returns: null
+
+notes: |
+  Walking into a rack: `live_set tracks N devices M chains P devices Q`
+  where the outer M is the RackDevice and the inner Q is a device inside
+  chain P.
+
+  Drum Racks always report 128 drum_pads — one per MIDI note number. Most are
+  empty. Use `visible_drum_pads` to work with the 16-pad matrix the user sees.
+
+  Macros are exposed as regular DeviceParameter children in the parameters
+  list of the RackDevice (not under a separate `macros` child). Their names
+  reflect user mapping; use `original_name` for the default ("Macro 1" etc.).

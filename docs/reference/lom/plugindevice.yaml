@@ -1,0 +1,33 @@
+object: PluginDevice
+canonical_path: "live_set tracks N devices M (when device is VST/AU)"
+summary: "An external plug-in (VST2, VST3, AU) hosted by Live. Extends Device."
+source_url: "https://docs.cycling74.com/apiref/lom/plugindevice/"
+verified_in: "12.1"
+
+children:
+  - name: presets
+    type: list
+    cardinality: list
+    access: [read, observe]
+    notes: "Plug-in-provided preset list, when the plug-in exposes one."
+
+properties:
+  - name: selected_preset_index
+    type: int
+    access: [read, write, observe]
+    notes: "-1 if no preset selected or the plug-in doesn't expose presets."
+
+functions: []
+
+notes: |
+  Plug-in parameters come through the standard Device `parameters` list, but
+  only parameters that the plug-in exposes AND that Live has "banked" for
+  automation appear. Users configure this via the Configure button in the
+  device header. Unbanked parameters are not LOM-visible.
+
+  This is relevant for plug-in automation and Push integration — a parameter
+  that "exists" in the plug-in's own UI but hasn't been configured into a
+  Live bank will not appear in `parameters`.
+
+  `class_name` on a PluginDevice is typically `PluginDevice`. The plug-in's
+  identity comes from its own `name` and preset info, not from class_name.

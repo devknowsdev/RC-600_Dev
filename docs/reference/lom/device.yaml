@@ -1,0 +1,94 @@
+object: Device
+canonical_path: "live_set tracks N devices M"
+summary: "Base class for any MIDI or audio device in Live. PluginDevice, MaxDevice, RackDevice, and the specific Live devices (Compressor, EQ8, Drift, etc.) all extend this."
+source_url: "https://docs.cycling74.com/apiref/lom/device/"
+verified_in: "12.1"
+
+children:
+  - name: parameters
+    type: DeviceParameter
+    cardinality: list
+    access: [read, observe]
+    notes: "All exposed parameters in the order Live presents them. Use getcount('parameters') to iterate."
+  - name: view
+    type: Device.View
+    cardinality: one
+    access: [read]
+  - name: input_routings
+    type: DeviceIO
+    cardinality: list
+    access: [read]
+    notes: "Device-level I/O routing. Present on devices that expose routing."
+  - name: output_routings
+    type: DeviceIO
+    cardinality: list
+    access: [read]
+
+properties:
+  - name: name
+    type: symbol
+    access: [read, write, observe]
+    notes: "User-editable display name."
+  - name: class_name
+    type: symbol
+    access: [read]
+    notes: "Internal Live class name (e.g. 'Compressor2', 'PluginDevice', 'MxDeviceAudioEffect'). Use this for programmatic identification — it's more stable than `name` which the user can rename."
+  - name: class_display_name
+    type: symbol
+    access: [read]
+    notes: "The device type name as shown in the browser."
+  - name: type
+    type: int
+    access: [read]
+    notes: "0 = undefined, 1 = instrument, 2 = audio effect, 3 = MIDI effect."
+  - name: is_active
+    type: bool
+    access: [read, observe]
+    notes: "Reflects the device on/off (the activator button), AND inclusion in a chain / rack that is itself active."
+  - name: can_have_chains
+    type: bool
+    access: [read]
+    notes: "True for RackDevice and its subclasses."
+  - name: can_have_drum_pads
+    type: bool
+    access: [read]
+  - name: is_collapsed
+    type: bool
+    access: [read, write, observe]
+    notes: "UI state — whether the device is shown folded in the chain."
+  - name: latency_in_samples
+    type: int
+    access: [read, observe]
+  - name: latency_in_ms
+    type: float
+    access: [read, observe]
+
+functions:
+  - name: store_chosen_bank
+    params:
+      - name: bank_index
+        type: int
+        optional: false
+    returns: null
+    notes: "Push-relevant: which parameter bank is currently selected."
+
+notes: |
+  For a generic tool that works on any device, the Device base class properties
+  are what you target. Reading `parameters` and iterating gives you full
+  parameter access regardless of device type.
+
+  For device-type-specific behavior, check `class_name`. Don't rely on `name`
+  for identification — users rename devices constantly.
+
+  `can_have_chains == 1` identifies any Rack (Instrument, Audio Effect, MIDI,
+  Drum). To walk into the rack's chains, the device must also be a RackDevice
+  subclass — see rackdevice.yaml.
+
+  When a device is inside a rack chain, its path extends from the parent:
+    live_set tracks N devices M chains P devices Q
+  with chains on the RackDevice.
+
+  Max for Live devices report `class_name` as `MxDeviceAudioEffect`,
+  `MxDeviceInstrument`, or `MxDeviceMidiEffect` depending on the type (verify
+  against the actual device — these strings are what has been observed,
+  not a documented guarantee).

@@ -1,0 +1,32 @@
+object: ControlSurface
+canonical_path: "control_surfaces N"
+summary: "A control surface slot from Live's preferences. N ranges 0–5 (six slots)."
+source_url: "https://docs.cycling74.com/apiref/lom/controlsurface/"
+verified_in: "12.1"
+
+children: []
+
+properties: []
+
+functions:
+  - name: is_grabbed
+    params:
+      - name: what
+        type: symbol
+        optional: false
+    returns: "bool"
+    notes: "Whether the control surface is currently grabbing a given Live UI element."
+
+notes: |
+  The Application object exposes `control_surfaces` as a list of 6 slots.
+  Slots where preferences have "None" selected return id 0. Slots that
+  reference a script that isn't active (e.g. Push2 preference with no
+  connected Push2) also return id 0.
+
+  ControlSurface itself is a relatively sparse LOM object — most of a
+  control surface's behavior is in its Python script, not in LOM-visible
+  state. For deep Push integration, the remote-script layer (Python) is
+  the real surface, not the LOM.
+
+  See docs/reference/push-integration.md and
+  docs/reference/remote-scripts-overview.md.

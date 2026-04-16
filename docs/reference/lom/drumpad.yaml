@@ -1,0 +1,44 @@
+object: DrumPad
+canonical_path: "live_set tracks N devices M drum_pads L"
+summary: "A single pad in a Drum Rack. One per MIDI note number (0–127)."
+source_url: "https://docs.cycling74.com/apiref/lom/drumpad/"
+verified_in: "12.1"
+
+children:
+  - name: chains
+    type: DrumChain
+    cardinality: list
+    access: [read, observe]
+    notes: "Drum Rack chains assigned to this pad. Usually one, sometimes zero, rarely more."
+
+properties:
+  - name: name
+    type: symbol
+    access: [read]
+    notes: "Display name (e.g. 'C1' or a user-renamed label)."
+  - name: note
+    type: int
+    access: [read]
+    notes: "MIDI note number 0–127."
+  - name: mute
+    type: bool
+    access: [read, write, observe]
+  - name: solo
+    type: bool
+    access: [read, write, observe]
+  - name: canonical_parent
+    type: RackDevice
+    access: [read]
+
+functions: []
+
+notes: |
+  Indexing: drum_pads[N] corresponds to MIDI note N. `note` property confirms.
+
+  A pad's "contents" live on its chains (usually a single DrumChain containing
+  a sampler / instrument plus effects). To find what's loaded on a pad:
+
+      live_set tracks N devices M drum_pads 36 chains 0 devices 0
+
+  Pads with no chains are empty slots. Check `getcount('chains')` before
+  walking.

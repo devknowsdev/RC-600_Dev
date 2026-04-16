@@ -1,0 +1,100 @@
+object: Song.View
+canonical_path: "live_set view"
+summary: "View-aspect of the Live Set — selected track, highlighted clip slot, detail views, and their companion navigation functions."
+source_url: "https://docs.cycling74.com/apiref/lom/song_view/"
+verified_in: "12.1"
+
+children: []
+
+properties:
+  - name: selected_track
+    type: Track
+    access: [read, write, observe]
+    notes: "Canonical way to find the track the user is focused on. Set to make a track selected."
+  - name: selected_scene
+    type: Scene
+    access: [read, write, observe]
+  - name: selected_parameter
+    type: DeviceParameter
+    access: [read, observe]
+    notes: "The parameter currently selected for automation editing, if any. id 0 if none."
+  - name: selected_chain
+    type: Chain
+    access: [read, write, observe]
+  - name: highlighted_clip_slot
+    type: ClipSlot
+    access: [read, write, observe]
+    notes: "The clip slot visually highlighted in Session View."
+  - name: detail_clip
+    type: Clip
+    access: [read, write, observe]
+    notes: "The clip shown in the Detail View. id 0 if no clip is displayed."
+  - name: draw_mode
+    type: bool
+    access: [read, write, observe]
+    notes: "Piano roll draw mode enabled."
+  - name: follow_song
+    type: bool
+    access: [read, write, observe]
+    notes: "Whether the playback position auto-scrolls the Arrangement view."
+
+functions:
+  - name: show_view
+    params:
+      - name: view_name
+        type: symbol
+        optional: false
+        notes: "Names include 'Browser', 'Arranger', 'Session', 'Detail', 'Detail/Clip', 'Detail/DeviceChain'."
+    returns: null
+  - name: hide_view
+    params:
+      - name: view_name
+        type: symbol
+        optional: false
+    returns: null
+  - name: is_view_visible
+    params:
+      - name: view_name
+        type: symbol
+        optional: false
+    returns: "bool"
+  - name: scroll_view
+    params:
+      - name: direction
+        type: int
+        optional: false
+        notes: "0=up, 1=down, 2=left, 3=right."
+      - name: view_name
+        type: symbol
+        optional: false
+      - name: modifier_pressed
+        type: bool
+        optional: false
+    returns: null
+    notes: "Only Arranger, Browser, Session, and Detail/DeviceChain are scrollable."
+  - name: zoom_view
+    params:
+      - name: direction
+        type: int
+        optional: false
+      - name: view_name
+        type: symbol
+        optional: false
+      - name: modifier_pressed
+        type: bool
+        optional: false
+    returns: null
+    notes: "Only Arrangement and Session Views can be zoomed."
+
+notes: |
+  These view properties are the lifeblood of selection-aware assistant tools.
+  `selected_track`, `detail_clip`, and `highlighted_clip_slot` change as the
+  user works. Observing them is the entry point for "do something to whatever
+  the user is looking at" workflows.
+
+  `selected_parameter` is particularly valuable for automation-editing tools:
+  it points at whatever parameter the user has picked in the Arrangement lane
+  chooser or the detail view.
+
+  See docs/research/selection-vs-deterministic.md for when to use these paths
+  versus structural `tracks N` paths.

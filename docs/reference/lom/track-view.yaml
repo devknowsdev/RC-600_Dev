@@ -1,0 +1,26 @@
+object: Track.View
+canonical_path: "live_set tracks N view"
+summary: "View-aspect of a Track — selected device, clip-slot bank offset."
+source_url: "https://docs.cycling74.com/apiref/lom/track_view/"
+verified_in: "12.1"
+
+children: []
+
+properties:
+  - name: selected_device
+    type: Device
+    access: [read, write, observe]
+    notes: "The currently selected device on this track. id 0 if no device selected."
+  - name: is_collapsed
+    type: bool
+    access: [read, write, observe]
+    notes: "Whether the track is collapsed in the UI."
+
+functions:
+  - name: select_instrument
+    params: []
+    returns: "bool — whether an instrument existed to select"
+
+notes: |
+  Track.View is how you reach the selected device on a specific track without
+  depending on the global Song.View selection. Useful for per-track utilities.

@@ -1,0 +1,24 @@
+object: this_device
+canonical_path: "this_device"
+summary: "The Max for Live device containing the live.path / LiveAPI caller. A root path — resolves to a Device (specifically a MaxDevice)."
+source_url: "https://docs.cycling74.com/apiref/lom/this_device/"
+verified_in: "12.1"
+
+children: []
+properties: []
+functions: []
+
+notes: |
+  `this_device` is how a Max for Live device refers to its own LOM instance
+  without hard-coding track/device indices. Essential when the device must
+  find its containing track or its own chain position:
+
+      var me = new LiveAPI("this_device");
+      var myId = me.id;
+      // walk up via parent navigation or resolve canonical_path
+
+  It returns a MaxDevice, which extends Device. All Device properties and
+  methods apply.
+
+  Use this instead of trying to locate the device by iterating tracks —
+  position-based lookup is brittle against user reordering.
