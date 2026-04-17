@@ -16,7 +16,8 @@
  *
  * Lifecycle:
  *   First bang from [live.thisdevice] calls init() once.
- *   Subsequent bangs trigger a manual refresh without creating new observers.
+ *   Subsequent bangs re-resolve selection and refresh without creating
+ *   new observers.
  *   This prevents observer accumulation, which is the #1 LiveAPI JS mistake.
  *   See DECISIONS.md D3 and docs/principles/observer-architecture.md.
  *
@@ -48,11 +49,10 @@ function bang() {
         init();
         initialized = true;
     } else {
-        // Already initialized — just refresh the display.
-        var track = new LiveAPI("live_set view selected_track");
-        if (track.id != 0) {
-            refreshDisplay(track);
-        }
+        // Already initialized — re-resolve selection and refresh.
+        // Safe: bindToSelectedTrack repoints via .id and preserves
+        // the canonical id == 0 handling without creating new observers.
+        bindToSelectedTrack();
     }
 }
 
