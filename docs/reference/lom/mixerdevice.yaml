@@ -1,3 +1,4 @@
+id: ref-lom-mixerdevice
 object: MixerDevice
 canonical_path: "live_set tracks N mixer_device"
 summary: "Per-track mixer device exposing volume, pan, sends, and track activator as DeviceParameter children."

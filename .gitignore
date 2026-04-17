@@ -1,0 +1,60 @@
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+\#*\#
+
+# Max / Ableton
+# - .amxd is a release artifact; keep unfrozen source (.maxpat) in git
+# - .maxpat: tracked
+# - .amxd: track only for released versions in examples/<device>/release/
+Backup/
+Autosave/
+*.maxhelp~
+max-projects-temp/
+# Ableton autosave
+Backup/
+# Ableton Crashes - do not commit
+Crashes/
+
+# Frozen device intermediate
+__Max_Backup__/
+
+# Python (for remote scripts / tools)
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Node (in case tooling uses it)
+node_modules/
+npm-debug.log*
+
+# Results that should remain empty until experiments are run
+# (use --force to commit actual results)
+experiments/*/results/_runlog.md.tmp
+experiments/*/results/*.als.tmp
+
+# Local-only reference material (see reference/README.md)
+reference/local-mirror/
+reference/pdfs/
+
+# AI tool artifacts
+.claude/
+.cursor/

@@ -1,3 +1,4 @@
+id: ref-lom-song
 object: Song
 canonical_path: "live_set"
 summary: "The current Live Set. Root for most Live API work."

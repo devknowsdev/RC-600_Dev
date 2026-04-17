@@ -32,11 +32,32 @@ Each question is scored 0–3:
 
 Passing: ≥ 48/60 (80%).
 
+### Evidence basis tags
+
+Each question is tagged with the evidence basis of the repo files it
+depends on:
+
+- **`[official]`** — All cited files are grounded in official sources.
+  The reference answer should be stated with confidence.
+- **`[inference]`** — All cited files are `evidence: inference`. The
+  reference answer represents the repo's best reasoning, not verified
+  fact. A correct response that hedges ("this is the expected behavior
+  based on the repo's analysis, but it hasn't been experimentally
+  verified") should score the same as or higher than a confident
+  assertion.
+- **`[mixed]`** — Some cited files are official, some inference. The
+  rubric notes which parts are firm and which should be hedged.
+
+When evaluating inference-grounded answers: **reward appropriate
+uncertainty**. An answer that says "the repo's principle recommends X,
+but this hasn't been tested in Live" is better than one that asserts X
+as platform fact.
+
 ---
 
 ## Questions
 
-### Q01 — Stage 0: Surface classification
+### Q01 — Stage 0: Surface classification [mixed]
 
 **Question:** A producer wants to build a tool that lets them tap a
 rhythm on their phone screen and have it quantize into a MIDI clip on
@@ -62,7 +83,7 @@ This is a multi-surface solution — external app + M4L + possibly Link.
 
 ---
 
-### Q02 — Stage 1: Live as host
+### Q02 — Stage 1: Live as host [official]
 
 **Question:** A Max for Live device works perfectly when tested in an
 empty Live Set but fails intermittently when loaded into the user's
@@ -79,7 +100,7 @@ context dependency or threading.
 
 ---
 
-### Q03 — Stage 2: LOM path construction
+### Q03 — Stage 2: LOM path construction [official]
 
 **Question:** Write the canonical path to reach the volume parameter
 of the third return track's mixer. Explain what type of object you
@@ -97,7 +118,7 @@ the MixerDevice itself — that was the v0.1 repo's error.
 
 ---
 
-### Q04 — Stage 2: id 0 handling
+### Q04 — Stage 2: id 0 handling [official]
 
 **Question:** You call `new LiveAPI("live_set view detail_clip")` and
 get back an object whose `.id` is `0`. What does this mean and what
@@ -111,7 +132,7 @@ it — don't proceed with reads or writes.
 
 ---
 
-### Q05 — Stage 3: Observer leak
+### Q05 — Stage 3: Observer leak [mixed]
 
 **Question:** A colleague writes a JS utility that creates a
 `new LiveAPI(callback)` inside `onSelectionChanged()` every time the
@@ -128,7 +149,7 @@ repoint via `.id`" fix. Deduct if they suggest `delete` or
 
 ---
 
-### Q06 — Stage 3: Write from callback
+### Q06 — Stage 3: Write from callback [official]
 
 **Question:** Your observer callback needs to mute a track when a
 parameter crosses a threshold. Can you call `api.set("mute", 1)` inside
@@ -143,7 +164,7 @@ or `[defer]` in a patch.
 
 ---
 
-### Q07 — Stage 4: Parameter naming
+### Q07 — Stage 4: Parameter naming [inference]
 
 **Question:** You're about to ship v1.0 of a Max for Live device with
 a filter. The parameter is currently named "Freq" (Short) / "Frequency"
@@ -154,14 +175,18 @@ already in users' hands?
 **Files needed:** `docs/principles/parameter-identity.md`
 
 **Rubric:** Before v1.0 ships: safe, rename freely. After v1.0 ships:
-**not safe** — changing the Long Name breaks automation, MIDI mappings,
-and macro mappings in existing user sets. Must recommend keeping
-"Frequency" as Long Name and changing Short Name to "Filt Freq" instead,
-or documenting it as a breaking change in a major version bump.
+the repo's parameter-identity principle (which is `evidence: inference`,
+not yet experimentally verified) recommends treating this as **not safe**
+— changing the Long Name likely breaks automation, MIDI mappings, and
+macro mappings in existing user sets. A strong answer acknowledges this
+is the repo's recommended conservative discipline and notes that
+`experiments/02-parameter-rename-migration/` would verify it. Must
+recommend keeping "Frequency" as Long Name and changing Short Name
+instead, or documenting it as a breaking change in a major version bump.
 
 ---
 
-### Q08 — Stage 4: Undo flooding
+### Q08 — Stage 4: Undo flooding [inference]
 
 **Question:** Your device has an internal LFO that modulates a
 `[live.dial]`'s value at 20 Hz. Users report that Cmd-Z no longer works
@@ -170,15 +195,17 @@ properly. Explain the problem and propose two solutions.
 **Files needed:** `docs/principles/undo-discipline.md`,
 `docs/reference/automation-vs-modulation.md`
 
-**Rubric:** Must identify undo flooding: each `set value` via
-`[live.object]` creates an undo entry. 20 Hz = 1200/min. Solutions must
-include `[live.remote~]` and/or hiding the parameter's visibility.
-Deduct if they suggest `[defer]` as the fix — deferring doesn't prevent
-undo entries, it just changes the thread.
+**Rubric:** Must identify the likely cause as undo flooding: the repo's
+undo-discipline principle (inference-grounded, pending experiment 01)
+states that each `set value` via `[live.object]` creates an undo entry.
+20 Hz = 1200/min. Solutions must include `[live.remote~]` and/or hiding
+the parameter's visibility. Deduct if they suggest `[defer]` as the fix
+— deferring doesn't prevent undo entries. An answer that notes this
+hasn't been experimentally confirmed in the repo should not be penalized.
 
 ---
 
-### Q09 — Stage 5: Push banking
+### Q09 — Stage 5: Push banking [inference]
 
 **Question:** Your M4L device has 12 exposed parameters. How does Push
 display them, and what should you do to make the display usable?
@@ -192,7 +219,7 @@ and pick Short Names that fit Push's character width.
 
 ---
 
-### Q10 — Stage 5: Remote script vs M4L
+### Q10 — Stage 5: Remote script vs M4L [inference]
 
 **Question:** A hardware controller manufacturer wants to build a
 deep integration with Live — transport control, mixer mapping, and a
@@ -210,7 +237,7 @@ device chain and doesn't naturally map to hardware transport buttons.
 
 ---
 
-### Q11 — Stage 6: Node for Max scope
+### Q11 — Stage 6: Node for Max scope [official]
 
 **Question:** You want your M4L device to make HTTP requests to a
 cloud API. Can you do this from `[js]`? If not, what should you use?
@@ -224,7 +251,7 @@ the IPC overhead / async nature.
 
 ---
 
-### Q12 — Stage 7: Plugin parameter visibility
+### Q12 — Stage 7: Plugin parameter visibility [inference]
 
 **Question:** A user loads a third-party VST3 synth in Live and
 complains that only 8 of its 200 parameters appear in the automation
@@ -240,7 +267,7 @@ device header and add the desired parameters.
 
 ---
 
-### Q13 — Stage 8: Crash recovery
+### Q13 — Stage 8: Crash recovery [inference]
 
 **Question:** A user's Live Set won't open — Live crashes on load. Walk
 them through recovery steps.
@@ -252,11 +279,14 @@ them through recovery steps.
 (2) check autosave/Undo directory, (3) check Log.txt for the crash
 cause, (4) as a last resort, decompress the `.als` (gzip XML), inspect
 for corruption, attempt to trim the corrupted region and re-save. Must
-warn against modifying the original file — work on copies.
+warn against modifying the original file — work on copies. Note: the
+crash-recovery reference doc is `evidence: inference` — file paths are
+approximate and version-sensitive. An answer that hedges on exact paths
+while getting the strategy right should score full marks.
 
 ---
 
-### Q14 — Stage 8: .als inspection
+### Q14 — Stage 8: .als inspection [inference]
 
 **Question:** You suspect a Max for Live device update broke automation
 in a user's set. How would you diagnose this without opening Live?
@@ -272,7 +302,7 @@ gzip-compressed XML.
 
 ---
 
-### Q15 — Stage 9: Experiment design
+### Q15 — Stage 9: Experiment design [inference]
 
 **Question:** You suspect that `[live.remote~]` modulation values
 persist after the modulation source stops — meaning the parameter stays
@@ -290,7 +320,7 @@ again. Must specify what outcome confirms vs falsifies.
 
 ---
 
-### Q16 — Cross-cutting: fact vs inference
+### Q16 — Cross-cutting: fact vs inference [inference]
 
 **Question:** Is the following claim verified or inference? "Changing a
 parameter's Long Name after shipping a device will break automation
@@ -305,7 +335,7 @@ to upgrade it. Deduct if they say "verified" without qualification.
 
 ---
 
-### Q17 — Cross-cutting: getcount
+### Q17 — Cross-cutting: getcount [official]
 
 **Question:** Write JavaScript to iterate all devices on the currently
 selected track and post each device's name. Include all safety checks.
@@ -333,7 +363,7 @@ function listDevices() {
 
 ---
 
-### Q18 — Cross-cutting: initialization
+### Q18 — Cross-cutting: initialization [official]
 
 **Question:** Your M4L device's `[js]` creates a `LiveAPI` object at
 the top level of the script file. It works sometimes and fails sometimes
@@ -349,7 +379,7 @@ constructing any LiveAPI objects.
 
 ---
 
-### Q19 — Cross-cutting: multi-instance
+### Q19 — Cross-cutting: multi-instance [official]
 
 **Question:** Two instances of your M4L device are on different tracks.
 When you change a parameter on one, the other changes too. What's the
@@ -364,7 +394,7 @@ instances share the same named channel. Fix: prefix with `---`.
 
 ---
 
-### Q20 — Cross-cutting: evidence discipline
+### Q20 — Cross-cutting: evidence discipline [inference]
 
 **Question:** You've read a community forum post claiming that
 `DeviceParameter.value` is always in the range 0.0–1.0 for all

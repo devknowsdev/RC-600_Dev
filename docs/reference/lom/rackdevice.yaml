@@ -1,3 +1,4 @@
+id: ref-lom-rackdevice
 object: RackDevice
 canonical_path: "live_set tracks N devices M (when device is a Rack)"
 summary: "Instrument Rack, Audio Effect Rack, MIDI Effect Rack, or Drum Rack. Extends Device with chains and macros."
