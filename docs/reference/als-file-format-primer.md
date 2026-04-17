@@ -7,7 +7,7 @@ max_version: "8.6"
 evidence: inference
 confidence: low
 last_verified: 2026-04-16
-related: [ref-packaging, principle-release-discipline]
+related: [principle-release-discipline, ref-crash-recovery]
 ---
 
 # Live Set (.als) file format

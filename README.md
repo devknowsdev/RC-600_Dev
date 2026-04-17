@@ -26,7 +26,7 @@ docs/
     lom/              One YAML file per LOM object (Song, Track, Device, ...)
     liveapi-cheatsheet.md
     liveapi-js-notes.md
-    threading-and-deferral.md    (stub + bibliography)
+    threading-and-deferral.md
     ...
   principles/         Normative guidance. How we do things.
     max-for-live-principles.md

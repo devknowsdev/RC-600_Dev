@@ -1,3 +1,4 @@
+id: ref-lom-chain
 object: Chain
 canonical_path: "live_set tracks N devices M chains P"
 summary: "A signal chain inside a Rack. Holds its own devices and a ChainMixerDevice."

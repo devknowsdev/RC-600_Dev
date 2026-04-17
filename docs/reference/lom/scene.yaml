@@ -1,3 +1,4 @@
+id: ref-lom-scene
 object: Scene
 canonical_path: "live_set scenes N"
 summary: "A row of clip slots in the Session View matrix, with its own tempo and time-signature hooks."

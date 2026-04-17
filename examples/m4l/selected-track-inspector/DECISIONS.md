@@ -18,14 +18,21 @@ return, master). MIDI Effects can only go on MIDI tracks. Since this
 device doesn't process audio or MIDI, either would technically work, but
 Audio Effect maximizes where it can be instantiated.
 
-## D3: Reuse observers, don't create new ones
+## D3: Reuse observers, don't create new ones — with lifecycle guard
 
 **Decision:** Create all `LiveAPI` observer instances in `init()`. On
-selection change, repoint via `.id`, never `new LiveAPI(...)`.
+selection change, repoint via `.id`, never `new LiveAPI(...)`. Guard
+`init()` behind an `initialized` flag so repeated `bang()` calls (from
+autowatch reloads, user wiring, or Max UI interactions) do not create
+duplicate observers.
 
 **Reason:** JS LiveAPI observers cannot be unregistered. The naive
-pattern (new observer per selection change) leaks. This device should
-demonstrate the correct pattern, because it's the repo's first example.
+pattern (new observer per selection change) leaks. Additionally,
+`bang()` can fire more than once in practice — `autowatch = 1` causes
+the script to reload when the `.js` file changes on disk, re-triggering
+`bang()`. Without the guard, each reload accumulates a new set of
+observers on top of the old ones. The guard ensures `init()` runs
+exactly once; subsequent bangs trigger a display refresh only.
 
 ## D4: No exposed parameters
 

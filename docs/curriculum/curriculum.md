@@ -23,9 +23,11 @@ paths.
 
 **Objective.** Tell the surfaces apart.
 
-**Read.** `docs/reference/development-paths.md` (TODO — for now, the
-following principle file stands in): `docs/principles/max-for-live-principles.md`
-section 1; the surface definitions in `docs/_meta/frontmatter-schema.md`.
+**Read.** `docs/principles/max-for-live-principles.md` (the surface
+definitions at the top); the surface enum in `docs/_meta/frontmatter-schema.md`
+(m4l, liveapi, remote-script, plugin-host, link, push, packaging);
+`docs/reference/remote-scripts-overview.md` for the controller-script
+surface distinction.
 
 **Mastery.** Given a one-line idea ("I want to build X"), route it to
 the right surface: Max for Live, external plugin, Link app, remote
@@ -133,8 +135,9 @@ should be a remote script.
 
 **Objective.** Know when the right solution lives outside Live.
 
-**Read.** `docs/reference/ableton-link-notes.md` (TODO stub),
-`docs/reference/node-for-max.md`.
+**Read.** `docs/reference/node-for-max.md`. (An Ableton Link reference
+note is planned but not yet written — for Link specifics, consult the
+official Link repository at https://github.com/Ableton/link.)
 
 **Mastery.** Architect a companion tool that syncs with Live via
 Link. Know when Node for Max is right vs when a standalone app is

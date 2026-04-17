@@ -1,3 +1,4 @@
+id: ref-lom-clip
 object: Clip
 canonical_path: "live_set tracks N clip_slots M clip; live_set tracks N arrangement_clips L"
 summary: "A clip in Live — audio or MIDI, Session or Arrangement."

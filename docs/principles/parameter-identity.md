@@ -7,7 +7,7 @@ max_version: "8.6"
 evidence: inference
 confidence: medium
 last_verified: 2026-04-16
-related: [principle-max-for-live, principle-release-discipline, research-parameter-migration-patterns]
+related: [principle-max-for-live, principle-release-discipline, exp-02-parameter-rename-migration]
 ---
 
 # Parameter identity and migration safety

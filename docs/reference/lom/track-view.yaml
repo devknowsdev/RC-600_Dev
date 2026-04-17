@@ -1,3 +1,4 @@
+id: ref-lom-track-view
 object: Track.View
 canonical_path: "live_set tracks N view"
 summary: "View-aspect of a Track — selected device, clip-slot bank offset."

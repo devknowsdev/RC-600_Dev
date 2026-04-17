@@ -1,3 +1,4 @@
+id: ref-lom-clipslot
 object: ClipSlot
 canonical_path: "live_set tracks N clip_slots M"
 summary: "An entry in the Session View matrix. Holds at most one clip and has its own playback state."

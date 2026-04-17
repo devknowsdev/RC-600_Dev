@@ -1,3 +1,4 @@
+id: ref-lom-this-device
 object: this_device
 canonical_path: "this_device"
 summary: "The Max for Live device containing the live.path / LiveAPI caller. A root path — resolves to a Device (specifically a MaxDevice)."

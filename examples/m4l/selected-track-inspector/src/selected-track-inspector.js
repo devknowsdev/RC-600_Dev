@@ -9,9 +9,16 @@
  * Demonstrates:
  *   - Correct LiveAPI initialization (wait for live.thisdevice bang)
  *   - Observer reuse (create once, repoint via .id)
+ *   - Initialization guard (prevents observer duplication on repeated bang)
  *   - id == 0 guarding
  *   - getcount() for list iteration
  *   - No writes from inside callbacks (read-only device)
+ *
+ * Lifecycle:
+ *   First bang from [live.thisdevice] calls init() once.
+ *   Subsequent bangs trigger a manual refresh without creating new observers.
+ *   This prevents observer accumulation, which is the #1 LiveAPI JS mistake.
+ *   See DECISIONS.md D3 and docs/principles/observer-architecture.md.
  *
  * Architecture: see DECISIONS.md in this directory.
  */
@@ -27,11 +34,26 @@ var nameObserver = null;
 // Current bound track id (for display refresh).
 var currentTrackId = 0;
 
+// Lifecycle guard: prevents repeated init on multiple bangs.
+// [live.thisdevice] should only bang once, but autowatch reloads,
+// Max UI interactions, and user-wired bangs can retrigger.
+var initialized = false;
+
 /**
  * Called when [live.thisdevice] bangs — safe to use LiveAPI.
+ * Also callable manually for a refresh without re-initialization.
  */
 function bang() {
-    init();
+    if (!initialized) {
+        init();
+        initialized = true;
+    } else {
+        // Already initialized — just refresh the display.
+        var track = new LiveAPI("live_set view selected_track");
+        if (track.id != 0) {
+            refreshDisplay(track);
+        }
+    }
 }
 
 function init() {

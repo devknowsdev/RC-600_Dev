@@ -1,3 +1,4 @@
+id: ref-lom-controlsurface
 object: ControlSurface
 canonical_path: "control_surfaces N"
 summary: "A control surface slot from Live's preferences. N ranges 0–5 (six slots)."
