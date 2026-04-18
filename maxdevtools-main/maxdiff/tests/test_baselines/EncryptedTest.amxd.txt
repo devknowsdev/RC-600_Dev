@@ -1,0 +1,6 @@
+Audio Effect Device
+-------------------
+----- Cipher -----
+...8955be1abf021543
+<Patch is encrypted>
+73321 bytes
