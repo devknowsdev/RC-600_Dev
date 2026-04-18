@@ -151,6 +151,7 @@ def find_files(repo_root, explicit_paths):
         return explicit_paths
 
     patterns = [
+        "docs/*.md",
         "docs/reference/**/*.md",
         "docs/principles/**/*.md",
         "docs/research/**/*.md",

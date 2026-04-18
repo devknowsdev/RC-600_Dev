@@ -2,6 +2,28 @@
 
 All notable changes to this repository.
 
+## [0.3.0] - 2026-04-18
+
+### Added — Phase 2 opening
+
+- `docs/copilot-architecture-v1.md` — v1 architecture spec for the
+  Ableton copilot system. MCP-first topology with the MCP server
+  hosted inside Node for Max, the JS bridge owning all LiveAPI
+  access, three read-only v1 tools (`inspect_selected_track`,
+  `inspect_device_at_path`, `list_device_parameters`), and explicit
+  deferrals for writes, auth, Push support, and automation.
+- Linter scope expanded to include top-level `docs/*.md`.
+
+### Context
+
+This is the first Phase 2 deliverable. The knowledge layer (Phase 1)
+is now being used as the grounding for architectural work rather than
+being further expanded. Future Phase 2 docs (`bridge-interface-spec.md`,
+implementation scaffolds) will follow the same pattern: every claim
+traceable to the knowledge base, every design decision marked as
+verified or inference, every unresolved area named explicitly rather
+than smoothed over.
+
 ## [0.2.0] - 2026-04-16
 
 ### Changed — Complete rebuild
