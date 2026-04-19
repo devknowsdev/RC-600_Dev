@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N clip_slots M"
 summary: "An entry in the Session View matrix. Holds at most one clip and has its own playback state."
 source_url: "https://docs.cycling74.com/apiref/lom/clipslot/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: clip

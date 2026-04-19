@@ -4,6 +4,9 @@ canonical_path: "live_set"
 summary: "The current Live Set. Root for most Live API work."
 source_url: "https://docs.cycling74.com/apiref/lom/song/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: cue_points
@@ -78,11 +81,11 @@ properties:
   - name: clip_trigger_quantization
     type: int
     access: [read, write, observe]
-    notes: "Indexed enum: 0=None, 1=8 Bars, 2=4 Bars, 3=2 Bars, 4=1 Bar, 5=1/2, 6=1/2T, 7=1/4, 8=1/4T, 9=1/8, 10=1/8T, 11=1/16, 12=1/16T, 13=1/32."
+    notes: "Per official Song LOM (`source_url`): transport quantization index — 0=None through 13=1/32 as documented there; confirm if UI adds values in newer Live builds."
   - name: count_in_duration
     type: int
     access: [read, observe]
-    notes: "0=None, 1=1 Bar, 2=2 Bars, 3=4 Bars."
+    notes: "Per official Song LOM: count-in index — 0=None, 1=1 Bar, 2=2 Bars, 3=4 Bars."
   - name: current_song_time
     type: float
     access: [read, write, observe]
@@ -135,6 +138,7 @@ properties:
   - name: midi_recording_quantization
     type: int
     access: [read, write, observe]
+    notes: "Per official Song LOM: record quantization — 0=None, 1=1/4 … 8=1/32 (see full mapping on `source_url`); distinct from `clip_trigger_quantization`."
   - name: name
     type: symbol
     access: [read]
@@ -221,7 +225,7 @@ functions:
       - name: destination
         type: int
         optional: true
-        notes: "0=auto, 1=session, 2=arrangement."
+        notes: "Per official Song LOM: 0=auto, 1=session, 2=arrangement."
     returns: null
   - name: continue_playing
     params: []
@@ -307,7 +311,7 @@ functions:
       - name: format
         type: int
         optional: false
-        notes: "0=ms, 1=Smpte24, 2=Smpte25, 3=Smpte30, 4=Smpte30Drop, 5=Smpte29."
+        notes: "Per official Song LOM: SMPTE/timecode selector (0–5 as documented on `source_url`)."
     returns: "symbol 'hours:min:sec'"
   - name: is_cue_point_selected
     params: []
@@ -378,3 +382,8 @@ notes: |
   a `new LiveAPI("live_set")` at the top of its observer graph.
   Transport methods (`start_playing`, `stop_playing`, `continue_playing`,
   `jump_by`) are not undoable, mirroring Live's GUI behavior.
+
+  Integer↔label tables in property/function notes are transcribed from the
+  official Song page at `source_url` for `verified_in` / the published apiref.
+  Re-check that page when targeting a different Live generation — enums can gain
+  entries when the transport UI changes.

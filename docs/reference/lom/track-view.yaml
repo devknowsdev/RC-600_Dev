@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N view"
 summary: "View-aspect of a Track — selected device, clip-slot bank offset."
 source_url: "https://docs.cycling74.com/apiref/lom/track_view/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children: []
 
@@ -23,5 +26,12 @@ functions:
     returns: "bool — whether an instrument existed to select"
 
 notes: |
+  Track.View is scoped to one track (`live_set tracks N view`). It does not
+  follow or replace Song.View (`live_set view`) — Song.View controls global
+  selection (e.g. highlighted track/device), while Track.View exposes this
+  track's selected device and Session bank UI state. Use Track.View when the
+  utility must target a fixed track regardless of what the user has selected
+  elsewhere.
+
   Track.View is how you reach the selected device on a specific track without
   depending on the global Song.View selection. Useful for per-track utilities.

@@ -4,6 +4,9 @@ canonical_path: "live_app"
 summary: "The Live application itself. Version info, preferences-adjacent state, dialog handling."
 source_url: "https://docs.cycling74.com/apiref/lom/application/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: view

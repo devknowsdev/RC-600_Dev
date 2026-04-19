@@ -1,9 +1,12 @@
 id: ref-lom-track
 object: Track
 canonical_path: "live_set tracks N"
-summary: "A track in Live — audio, MIDI, return, or master. Not all properties apply to all track types."
+summary: "A track in Live (audio, MIDI, return, or master — same LOM class; applicability varies by track kind)."
 source_url: "https://docs.cycling74.com/apiref/lom/track/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: take_lanes
@@ -25,7 +28,7 @@ children:
     type: Device
     cardinality: list
     access: [read, observe]
-    notes: "Includes the mixer device at the end of the chain."
+    notes: "Official LOM: includes the mixer device (same chain list also reachable via `mixer_device` child)."
   - name: group_track
     type: Track
     cardinality: one
@@ -49,19 +52,19 @@ properties:
   - name: available_input_routing_channels
     type: dictionary
     access: [read, observe]
-    notes: "Audio / MIDI tracks only."
+    notes: "Audio / MIDI tracks only. Dict wraps list under key `available_input_routing_channels`; entries match `input_routing_channel` shape (display_name + identifier symbols)."
   - name: available_input_routing_types
     type: dictionary
     access: [read, observe]
-    notes: "Audio / MIDI tracks only."
+    notes: "Audio / MIDI tracks only. Dict wraps list under key `available_input_routing_types`; entries match `input_routing_type` shape."
   - name: available_output_routing_channels
     type: dictionary
     access: [read, observe]
-    notes: "Not on master."
+    notes: "Not on master. Dict wraps list under key `available_output_routing_channels`; entries match `output_routing_channel` shape."
   - name: available_output_routing_types
     type: dictionary
     access: [read, observe]
-    notes: "Not on master."
+    notes: "Not on master. Dict wraps list under key `available_output_routing_types`; entries match `output_routing_type` shape."
   - name: back_to_arranger
     type: bool
     access: [read, write, observe]
@@ -121,9 +124,11 @@ properties:
   - name: input_routing_channel
     type: dictionary
     access: [read, write, observe]
+    notes: "Keys `display_name` and `identifier` (symbols). Values label routing endpoints — not a generic string→string map."
   - name: input_routing_type
     type: dictionary
     access: [read, write, observe]
+    notes: "Keys `display_name` and `identifier` (symbols)."
   - name: is_foldable
     type: bool
     access: [read]
@@ -170,9 +175,11 @@ properties:
   - name: output_routing_channel
     type: dictionary
     access: [read, write, observe]
+    notes: "Keys `display_name` and `identifier` (symbols). Not on master."
   - name: output_routing_type
     type: dictionary
     access: [read, write, observe]
+    notes: "Keys `display_name` and `identifier` (symbols). Not on master."
   - name: playing_slot_index
     type: int
     access: [read, observe]
@@ -257,10 +264,14 @@ functions:
     returns: null
 
 notes: |
-  Devices list includes the mixer_device. When iterating devices by index,
-  positions 0..getcount(devices)-1 are user-visible devices in chain order.
-  The mixer_device is not at an index in that list — it's reached as a direct
-  named child, not by position.
+  Polymorphism: one LOM `Track` class covers audio, MIDI, return, and master
+  tracks. Official docs tag properties that do not apply (e.g. return/master
+  exclusions). Prefer `has_*` / `can_*` booleans when branching in code.
 
-  Mixer parameters (volume, panning, sends, track_activator) are children of
-  `mixer_device`, not path segments on the track itself. See mixerdevice.yaml.
+  `devices` and `mixer_device`: official LOM states the `devices` list includes
+  the mixer device and also exposes `mixer_device` as a direct child — use
+  whichever access pattern fits (count/indices vs named child); see cycling74
+  Track children.
+
+  Mixer parameters (volume, panning, sends, track activator) live under
+  `mixer_device`. See mixerdevice.yaml.

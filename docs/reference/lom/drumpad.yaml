@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N devices M drum_pads L"
 summary: "A single pad in a Drum Rack. One per MIDI note number (0–127)."
 source_url: "https://docs.cycling74.com/apiref/lom/drumpad/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: chains
@@ -34,7 +37,10 @@ properties:
 functions: []
 
 notes: |
-  Indexing: drum_pads[N] corresponds to MIDI note N. `note` property confirms.
+  Indexing matches official DrumPad docs (`source_url`): `drum_pads[N]` aligns with MIDI note N; `note` confirms.
+
+  Walkthrough paths below are **operational guidance** (evidence: inference)
+  grounded in normal Drum Rack layout — always `getcount` before walking chains/devices.
 
   A pad's "contents" live on its chains (usually a single DrumChain containing
   a sampler / instrument plus effects). To find what's loaded on a pad:

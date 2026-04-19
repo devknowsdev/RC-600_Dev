@@ -4,67 +4,99 @@ canonical_path: "live_set tracks N devices M (when device is a Rack)"
 summary: "Instrument Rack, Audio Effect Rack, MIDI Effect Rack, or Drum Rack. Extends Device with chains and macros."
 source_url: "https://docs.cycling74.com/apiref/lom/rackdevice/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
+  - name: chain_selector
+    type: DeviceParameter
+    cardinality: one
+    access: [read]
+    notes: "Per official RackDevice LOM: convenience accessor for the rack chain selector."
   - name: chains
     type: Chain
     cardinality: list
     access: [read, observe]
     notes: "Each chain contains its own list of devices. For Drum Racks, see drum_pads also."
+  - name: drum_pads
+    type: DrumPad
+    cardinality: list
+    access: [read, observe]
+    notes: "Official LOM: all 128 DrumPads for the topmost Drum Rack; inner/nested Drum Racks return an empty list."
   - name: return_chains
     type: Chain
     cardinality: list
     access: [read, observe]
     notes: "Chains marked as returns (for audio effect sends within the rack)."
-  - name: drum_pads
-    type: DrumPad
-    cardinality: list
-    access: [read, observe]
-    notes: "Drum Racks only. Always 128 pads indexed 0..127 (one per MIDI note)."
   - name: visible_drum_pads
     type: DrumPad
     cardinality: list
     access: [read, observe]
-    notes: "Drum Racks only. The 16 pads currently shown in the pad matrix based on scroll position."
+    notes: "Official LOM: all 16 visible DrumPads for the topmost Drum Rack; inner Drum Racks return an empty list (pad scroll follows `RackDevice.View.drum_pads_scroll_position`)."
   - name: view
     type: RackDevice.View
     cardinality: one
     access: [read]
 
 properties:
-  - name: has_drum_pads
+  - name: can_show_chains
     type: bool
     access: [read]
+    notes: "Official LOM: 1 when the rack contains an instrument device that can show chains in Session View."
+  - name: has_drum_pads
+    type: bool
+    access: [read, observe]
+    notes: "Official LOM: 1 for a Drum Rack with pads; nested Drum Rack without pads reports differently."
   - name: has_macro_mappings
     type: bool
     access: [read, observe]
+    notes: "Official LOM: 1 when any rack macro maps to a parameter."
   - name: is_showing_chains
     type: bool
     access: [read, write, observe]
-  - name: macros_mapped_parameters
-    type: list
+    notes: "Official LOM: instrument rack chains visibility in Session View."
+  - name: variation_count
+    type: int
     access: [read, observe]
-    notes: "List of parameters currently mapped to macros."
+    available_since: "11.0"
+    notes: "Official LOM: stored macro variations count."
+  - name: selected_variation_index
+    type: int
+    access: [read, write, observe]
+    available_since: "11.0"
+    notes: "Official LOM: selected macro variation index."
+  - name: visible_macro_count
+    type: int
+    access: [read, observe]
+    notes: "Official LOM: how many macro dials are currently visible."
 
 functions:
   - name: copy_pad
     params:
-      - name: source_pad
-        type: DrumPad
+      - name: source_index
+        type: int
         optional: false
-      - name: target_pad
-        type: DrumPad
+        notes: "Pad index within the Drum Rack (official LOM parameter name)."
+      - name: destination_index
+        type: int
         optional: false
     returns: null
+    notes: "Copies pad content between indices; see official RackDevice LOM."
 
 notes: |
   Walking into a rack: `live_set tracks N devices M chains P devices Q`
   where the outer M is the RackDevice and the inner Q is a device inside
   chain P.
 
-  Drum Racks always report 128 drum_pads — one per MIDI note number. Most are
-  empty. Use `visible_drum_pads` to work with the 16-pad matrix the user sees.
+  `drum_pads` / `visible_drum_pads` wording and cardinalities come directly from
+  the published RackDevice page (`source_url`).
 
-  Macros are exposed as regular DeviceParameter children in the parameters
-  list of the RackDevice (not under a separate `macros` child). Their names
-  reflect user mapping; use `original_name` for the default ("Macro 1" etc.).
+  Macro mapping state: use `has_macro_mappings`, `visible_macro_count`, and
+  macro entries in the inherited Device `parameters` list — there is **no**
+  `macros_mapped_parameters` field on the current public LOM page; do not assume
+  a parallel list property.
+
+  Macro functions (`add_macro`, `remove_macro`, macro variations, etc.) and
+  `insert_chain` are documented on `source_url` with `available_since` tags;
+  omitting them from this YAML does not imply they are absent from Live.

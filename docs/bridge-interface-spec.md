@@ -79,3 +79,22 @@ None
     }
   ]
 }
+## Path validation rules
+
+For tools accepting a `path`:
+
+- Must start with:
+  - `live_set`
+  - or `live_app`
+
+- Must resolve to a valid object (not a parameter)
+
+- Forbidden targets:
+  - DeviceParameter endpoints (e.g. `... volume`)
+  - direct value paths
+
+- If path resolves to:
+  - id 0 → return `{ error: "id_zero" }`
+  - invalid structure → `{ error: "invalid_path" }`
+
+- Tools must not interpret paths as commands.

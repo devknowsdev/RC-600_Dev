@@ -4,6 +4,9 @@ canonical_path: "live_set view"
 summary: "View-aspect of the Live Set — selected track, highlighted clip slot, detail views, and their companion navigation functions."
 source_url: "https://docs.cycling74.com/apiref/lom/song_view/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children: []
 
@@ -45,7 +48,7 @@ functions:
       - name: view_name
         type: symbol
         optional: false
-        notes: "Names include 'Browser', 'Arranger', 'Session', 'Detail', 'Detail/Clip', 'Detail/DeviceChain'."
+        notes: "Symbols accepted by Live for `show_view` / `hide_view` — consult current Song.View LOM (`source_url`); examples often include Browser / Arranger / Session / Detail variants but strings can change between Live versions."
     returns: null
   - name: hide_view
     params:
@@ -64,7 +67,7 @@ functions:
       - name: direction
         type: int
         optional: false
-        notes: "0=up, 1=down, 2=left, 3=right."
+        notes: "Scroll direction index per Song.View LOM (`source_url`); typical mapping 0–3 as documented there — verify for your Live build."
       - name: view_name
         type: symbol
         optional: false
@@ -72,7 +75,7 @@ functions:
         type: bool
         optional: false
     returns: null
-    notes: "Only Arranger, Browser, Session, and Detail/DeviceChain are scrollable."
+    notes: "Which `view_name` values accept scrolling is documented on Song.View (`source_url`); UI changes can alter the set."
   - name: zoom_view
     params:
       - name: direction
@@ -85,9 +88,12 @@ functions:
         type: bool
         optional: false
     returns: null
-    notes: "Only Arrangement and Session Views can be zoomed."
+    notes: "Zoom targets match Song.View docs (`source_url`); confirm for your Live version."
 
 notes: |
+  Exact view symbols and which panels scroll/zoom are **version-sensitive** —
+  treat `functions` notes as pointers to `source_url`, not guaranteed literals.
+
   These view properties are the lifeblood of selection-aware assistant tools.
   `selected_track`, `detail_clip`, and `highlighted_clip_slot` change as the
   user works. Observing them is the entry point for "do something to whatever

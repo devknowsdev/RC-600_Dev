@@ -7,7 +7,7 @@ max_version: "8.6"
 evidence: official
 confidence: high
 source: "https://docs.cycling74.com/apiref/lom/"
-last_verified: 2026-04-16
+last_verified: 2026-04-19
 ---
 
 # LOM reference
@@ -35,11 +35,15 @@ where they differ, with 12.2+ and 12.3+ additions flagged.
 ## Schema
 
 ```yaml
+id: ref-lom-objectname        # stable cross-reference id (kebab-case slug)
 object: ObjectName            # LOM class name
 canonical_path: "..."         # or null for types reachable only via another object
 summary: "..."                # one-line description from the LOM
-source_url: "https://..."     # direct link to the LOM page
-verified_in: "12.1"
+source_url: "https://..."     # direct link to the LOM page (official evidence anchor)
+verified_in: "12.1"           # Live version used when reconciling Max 8 vs current apiref
+evidence: official            # repo standard: official for apiref-backed entries
+confidence: high
+last_verified: YYYY-MM-DD     # when this file was last checked against source_url
 
 children:                     # list child or single-child references
   - name: children_name
@@ -73,47 +77,15 @@ track_type_restrictions:      # optional — e.g. "master only"
 
 ## Files in this directory
 
-Core objects (written):
+Present YAML objects (this repo):
 
-- `song.yaml`
-- `track.yaml`
-- `device.yaml`
-- `deviceparameter.yaml`
-- `mixerdevice.yaml`
-- `clipslot.yaml`
-- `clip.yaml`
-- `scene.yaml`
-- `song-view.yaml`
-- `track-view.yaml`
-- `application.yaml`
-- `application-view.yaml`
-- `this-device.yaml`
-- `cuepoint.yaml`
+- **Core:** `application.yaml`, `clip.yaml`, `clipslot.yaml`, `device.yaml`, `deviceparameter.yaml`, `mixerdevice.yaml`, `scene.yaml`, `song.yaml`, `song-view.yaml`, `this-device.yaml`, `track.yaml`, `track-view.yaml`
+- **Devices / racks:** `controlsurface.yaml`, `drumpad.yaml`, `plugindevice.yaml`, `rackdevice.yaml`, `chain.yaml`
 
-Device subtype / rack objects (written, essential):
+Planned YAML stubs (not in repo yet; use Cycling ’74 apiref until added):
 
-- `rackdevice.yaml`
-- `chain.yaml`
-- `chainmixerdevice.yaml`
-- `drumchain.yaml`
-- `drumpad.yaml`
-- `plugindevice.yaml`
-- `maxdevice.yaml`
-- `controlsurface.yaml`
-
-Newer / advanced (stubs with `available_since` flagged):
-
-- `takelane.yaml` — Live 11+
-- `groove.yaml`, `groovepool.yaml` — Live 11+
-- `tuningsystem.yaml` — Live 12+
-
-Device-specific stubs (not written; see official LOM as canonical):
-
-- `simplerdevice.yaml`, `wavetabledevice.yaml`, `compressordevice.yaml`,
-  `eq8device.yaml`, `driftdevice.yaml`, `drumcelldevice.yaml`,
-  `hybridreverbdevice.yaml`, `looperdevice.yaml`, `melddevice.yaml`,
-  `roardevice.yaml`, `shifterdevice.yaml`, `spectralresonatordevice.yaml`,
-  `sample.yaml`
+- **Newer / advanced:** `takelane.yaml` (Live 11+), `groove.yaml`, `groovepool.yaml` (Live 11+), `tuningsystem.yaml` (Live 12+), `cuepoint.yaml`, `application-view.yaml`, `chainmixerdevice.yaml`, `drumchain.yaml`, `maxdevice.yaml`
+- **Device-specific** (extend `Device`; see official LOM as canonical): `simplerdevice.yaml`, `wavetabledevice.yaml`, `compressordevice.yaml`, `eq8device.yaml`, `driftdevice.yaml`, `drumcelldevice.yaml`, `hybridreverbdevice.yaml`, `looperdevice.yaml`, `melddevice.yaml`, `roardevice.yaml`, `shifterdevice.yaml`, `spectralresonatordevice.yaml`, `sample.yaml`
 
 (These extend `Device` with per-device-type parameter names. For most
 tooling, use the Device interface; only consult these when you need

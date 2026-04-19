@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N clip_slots M clip; live_set tracks N arrangem
 summary: "A clip in Live — audio or MIDI, Session or Arrangement."
 source_url: "https://docs.cycling74.com/apiref/lom/clip/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: view

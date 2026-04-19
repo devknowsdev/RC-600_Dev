@@ -10,6 +10,7 @@ Current mutable repo state. Update this file after material repo changes.
 5. Expand reference coverage where the repo still has thin spots.
 
 ## Current notes
+- LOM YAML files under `docs/reference/lom/` now include `evidence`, `confidence`, and `last_verified` (see latest handover in `HANDOVERS/`).
 - Canonical instructions live in `AGENTS.md`.
 - Repository methodology lives in `docs/_meta/METHODOLOGY.md`.
 - `HANDOVERS/` is the session-to-session coordination layer.

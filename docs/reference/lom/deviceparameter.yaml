@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N devices M parameters L"
 summary: "An automatable parameter within a device. Mixer controls, macros, and per-device knobs all surface as DeviceParameter."
 source_url: "https://docs.cycling74.com/apiref/lom/deviceparameter/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children: []
 
@@ -11,7 +14,7 @@ properties:
   - name: automation_state
     type: int
     access: [read, observe]
-    notes: "0 = no automation, 1 = automation active, 2 = automation overridden."
+    notes: "Per official DeviceParameter LOM (`source_url`): 0=no automation, 1=active, 2=overridden — verify mapping stays identical when upgrading Live (enum anchored to published apiref)."
   - name: default_value
     type: float
     access: [read]
@@ -19,7 +22,7 @@ properties:
   - name: is_enabled
     type: bool
     access: [read]
-    notes: "0 if the parameter is disabled — typically because it's macro-controlled, live.remote~ controlled, or otherwise locked."
+    notes: "evidence: mixed — official: 1 when the value can be changed by the user, `live.object` set, automation, or assigned MIDI/keys; 0 when Live blocks direct moves (e.g. macro control, [live.remote~], or other cases Live disallows). inference: we colloquially say 'locked' for 0; the official list in `source_url` is authoritative."
   - name: is_quantized
     type: bool
     access: [read]
@@ -41,15 +44,15 @@ properties:
   - name: state
     type: int
     access: [read, observe]
-    notes: "0 = active and changeable, 1 = changeable but inaudible, 2 = cannot be changed."
+    notes: "Per official LOM: 0=active, 1=changeable but inaudible, 2=read-only; same version-anchoring caution as `automation_state`."
   - name: value
     type: float
     access: [read, write, observe]
     notes: "Internal numeric value between min and max. For display, use display_value."
   - name: display_value
-    type: float
+    type: symbol
     access: [read, observe]
-    notes: "The value as shown in the GUI. For quantized params this is the index; for continuous, the same numeric as value."
+    notes: "What the user sees in the device panel (e.g. `-6.0 dB`, `1/4`, preset names). evidence: mixed — public apiref still types this as `float` in some builds, but Max/LiveAPI returns GUI text for many parameters; use `str_for_value` / `__str__` if you need a string from a numeric. For continuous dials, display can still look like a float string."
   - name: value_items
     type: StringVector
     access: [read]

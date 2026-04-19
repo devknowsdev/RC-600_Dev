@@ -1,9 +1,12 @@
 id: ref-lom-this-device
 object: this_device
 canonical_path: "this_device"
-summary: "The Max for Live device containing the live.path / LiveAPI caller. A root path — resolves to a Device (specifically a MaxDevice)."
+summary: "Root path for the Max patch containing the LiveAPI caller — LOM class is Device (official apiref)."
 source_url: "https://docs.cycling74.com/apiref/lom/this_device/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children: []
 properties: []
@@ -18,8 +21,11 @@ notes: |
       var myId = me.id;
       // walk up via parent navigation or resolve canonical_path
 
-  It returns a MaxDevice, which extends Device. All Device properties and
-  methods apply.
+  Official LOM (`source_url`) states the object's class is `Device`, not a
+  named `MaxDevice` type in the reference. In practice many M4L patches are
+  backed by Max for Live device instances whose concrete UI type behaves like
+  MaxDevice — treat that subtype nuance as evidence: inference, confidence:
+  medium until confirmed by experiment.
 
   Use this instead of trying to locate the device by iterating tracks —
   position-based lookup is brittle against user reordering.

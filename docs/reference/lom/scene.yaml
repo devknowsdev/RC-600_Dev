@@ -4,6 +4,9 @@ canonical_path: "live_set scenes N"
 summary: "A row of clip slots in the Session View matrix, with its own tempo and time-signature hooks."
 source_url: "https://docs.cycling74.com/apiref/lom/scene/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: clip_slots
@@ -61,11 +64,11 @@ functions:
     returns: null
 
 notes: |
-  Scene names that look like "120 BPM 4/4" have historically been special-cased
-  by Live — the scene's tempo and time signature were parsed from the name.
-  From Live 11+ this was replaced by explicit `tempo` / `tempo_enabled` /
-  `time_signature_*` properties. Prefer the explicit properties; name-parsing
-  is fragile and version-sensitive.
+  Some user communities report that very old Live versions heuristically tied
+  scene tempo/signature to specially formatted scene names (evidence: inference,
+  confidence: low — not reproduced here). Prefer explicit Scene properties
+  (`tempo`, `tempo_enabled`, `time_signature_*`) from the official Scene LOM;
+  they are authoritative for tempo/signature automation regardless of scene name.
 
   `fire()` on a scene fires every slot in the row, respecting each slot's
   state (empty slots fire their track's stop button if one exists).

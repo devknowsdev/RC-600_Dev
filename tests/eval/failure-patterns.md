@@ -22,3 +22,8 @@ Use these tags when scoring eval runs.
 - selection-scope-confusion
 - unit-confusion
 - version-detection-heuristic
+
+## Severity guidance
+- critical: would likely cause broken tooling or misleading implementation
+- major: materially wrong but recoverable
+- minor: imprecise wording or missing caveat

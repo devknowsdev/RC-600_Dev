@@ -4,6 +4,9 @@ canonical_path: "control_surfaces N"
 summary: "A control surface slot from Live's preferences. N ranges 0–5 (six slots)."
 source_url: "https://docs.cycling74.com/apiref/lom/controlsurface/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children: []
 

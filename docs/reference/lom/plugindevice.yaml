@@ -4,13 +4,16 @@ canonical_path: "live_set tracks N devices M (when device is VST/AU)"
 summary: "An external plug-in (VST2, VST3, AU) hosted by Live. Extends Device."
 source_url: "https://docs.cycling74.com/apiref/lom/plugindevice/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: presets
-    type: list
+    type: StringVector
     cardinality: list
     access: [read, observe]
-    notes: "Plug-in-provided preset list, when the plug-in exposes one."
+    notes: "Official PluginDevice LOM type `StringVector` — ordered preset name strings when the plug-in exposes a preset list; empty/unused if the plug-in does not."
 
 properties:
   - name: selected_preset_index
@@ -30,5 +33,7 @@ notes: |
   that "exists" in the plug-in's own UI but hasn't been configured into a
   Live bank will not appear in `parameters`.
 
-  `class_name` on a PluginDevice is typically `PluginDevice`. The plug-in's
-  identity comes from its own `name` and preset info, not from class_name.
+  `class_name` (inherited from Device) reflects Live's internal device class
+  symbol. For hosted plug-ins, vendor/product identity is usually clearer from
+  `name` / browser metadata and the plug-in UI than from `class_name` alone
+  (evidence: inference, confidence: medium).

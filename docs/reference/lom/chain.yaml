@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N devices M chains P"
 summary: "A signal chain inside a Rack. Holds its own devices and a ChainMixerDevice."
 source_url: "https://docs.cycling74.com/apiref/lom/chain/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: devices

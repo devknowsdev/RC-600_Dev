@@ -4,6 +4,9 @@ canonical_path: "live_set tracks N devices M"
 summary: "Base class for any MIDI or audio device in Live. PluginDevice, MaxDevice, RackDevice, and the specific Live devices (Compressor, EQ8, Drift, etc.) all extend this."
 source_url: "https://docs.cycling74.com/apiref/lom/device/"
 verified_in: "12.1"
+evidence: official
+confidence: high
+last_verified: 2026-04-19
 
 children:
   - name: parameters
@@ -41,7 +44,7 @@ properties:
   - name: type
     type: int
     access: [read]
-    notes: "0 = undefined, 1 = instrument, 2 = audio effect, 3 = MIDI effect."
+    notes: "Per official Device LOM (`source_url`): 0=undefined, 1=instrument, 2=audio effect, 3=MIDI effect — confirm if Live adds categories in a future release."
   - name: is_active
     type: bool
     access: [read, observe]
