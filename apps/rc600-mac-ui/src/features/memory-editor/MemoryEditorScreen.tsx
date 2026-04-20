@@ -17,7 +17,7 @@ export function MemoryEditorScreen() {
   return (
     <div style={{ padding: 20, width: '100%', maxWidth: 900 }}>
       <MemoryNameSection model={model} />
-      <TracksSection />
+      <TracksSection model={model} />
     </div>
   )
 }
