@@ -38,69 +38,131 @@ export function TrackCard({
   onChangeStartMode,
   onChangeStopMode
 }: Props) {
+  const playbackFields = fields.filter((field) =>
+    field.canonical_id === 'track.reverse' ||
+    field.canonical_id === 'track.one_shot' ||
+    field.canonical_id === 'track.play_mode'
+  )
+
+  const timingFields = fields.filter((field) =>
+    field.canonical_id === 'track.start_mode' ||
+    field.canonical_id === 'track.stop_mode'
+  )
+
   return (
     <div style={{ border: '1px solid #ddd', padding: 12, borderRadius: 8, marginBottom: 12 }}>
       <h4 style={{ marginTop: 0 }}>Track {trackIndex}</h4>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {fields.map((field) => {
-          if (field.canonical_id === 'track.play_mode') {
-            return (
-              <Row key={field.canonical_id}>
-                <EnumField
-                  label={field.ui_label}
-                  value={playMode}
-                  options={field.values || ['MULTI', 'SINGLE']}
-                  onChange={onChangePlayMode}
-                />
-                <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
-              </Row>
-            )
-          }
+      <Section title="Playback">
+        {playbackFields.map((field) =>
+          renderField({
+            field,
+            reverse,
+            oneShot,
+            playMode,
+            startMode,
+            stopMode,
+            onToggleReverse,
+            onToggleOneShot,
+            onChangePlayMode,
+            onChangeStartMode,
+            onChangeStopMode
+          })
+        )}
+      </Section>
 
-          if (field.canonical_id === 'track.start_mode') {
-            return (
-              <Row key={field.canonical_id}>
-                <EnumField
-                  label={field.ui_label}
-                  value={startMode}
-                  options={field.values || ['IMMEDIATE', 'FADE']}
-                  onChange={onChangeStartMode}
-                />
-                <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
-              </Row>
-            )
-          }
+      <Section title="Timing">
+        {timingFields.map((field) =>
+          renderField({
+            field,
+            reverse,
+            oneShot,
+            playMode,
+            startMode,
+            stopMode,
+            onToggleReverse,
+            onToggleOneShot,
+            onChangePlayMode,
+            onChangeStartMode,
+            onChangeStopMode
+          })
+        )}
+      </Section>
+    </div>
+  )
+}
 
-          if (field.canonical_id === 'track.stop_mode') {
-            return (
-              <Row key={field.canonical_id}>
-                <EnumField
-                  label={field.ui_label}
-                  value={stopMode}
-                  options={field.values || ['IMMEDIATE', 'FADE', 'LOOP']}
-                  onChange={onChangeStopMode}
-                />
-                <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
-              </Row>
-            )
-          }
+function renderField({
+  field,
+  reverse,
+  oneShot,
+  playMode,
+  startMode,
+  stopMode,
+  onToggleReverse,
+  onToggleOneShot,
+  onChangePlayMode,
+  onChangeStartMode,
+  onChangeStopMode
+}: any) {
+  if (field.canonical_id === 'track.play_mode') {
+    return (
+      <Row key={field.canonical_id}>
+        <EnumField
+          label={field.ui_label}
+          value={playMode}
+          options={field.values || ['MULTI', 'SINGLE']}
+          onChange={onChangePlayMode}
+        />
+        <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+      </Row>
+    )
+  }
 
-          const checked = field.canonical_id === 'track.reverse' ? reverse : oneShot
-          const onChange = field.canonical_id === 'track.reverse' ? onToggleReverse : onToggleOneShot
+  if (field.canonical_id === 'track.start_mode') {
+    return (
+      <Row key={field.canonical_id}>
+        <EnumField
+          label={field.ui_label}
+          value={startMode}
+          options={field.values || ['IMMEDIATE', 'FADE']}
+          onChange={onChangeStartMode}
+        />
+        <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+      </Row>
+    )
+  }
 
-          return (
-            <Row key={field.canonical_id}>
-              <ToggleField
-                label={field.ui_label}
-                checked={checked}
-                onChange={onChange}
-              />
-              <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
-            </Row>
-          )
-        })}
-      </div>
+  if (field.canonical_id === 'track.stop_mode') {
+    return (
+      <Row key={field.canonical_id}>
+        <EnumField
+          label={field.ui_label}
+          value={stopMode}
+          options={field.values || ['IMMEDIATE', 'FADE', 'LOOP']}
+          onChange={onChangeStopMode}
+        />
+        <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+      </Row>
+    )
+  }
+
+  const checked = field.canonical_id === 'track.reverse' ? reverse : oneShot
+  const onChange = field.canonical_id === 'track.reverse' ? onToggleReverse : onToggleOneShot
+
+  return (
+    <Row key={field.canonical_id}>
+      <ToggleField label={field.ui_label} checked={checked} onChange={onChange} />
+      <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+    </Row>
+  )
+}
+
+function Section({ title, children }: any) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#555' }}>{title}</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>
     </div>
   )
 }
