@@ -17,11 +17,15 @@ type Props = {
   playMode: string
   startMode: string
   stopMode: string
+  loopSync: boolean
+  tempoSync: boolean
   onToggleReverse: (v: boolean) => void
   onToggleOneShot: (v: boolean) => void
   onChangePlayMode: (v: string) => void
   onChangeStartMode: (v: string) => void
   onChangeStopMode: (v: string) => void
+  onToggleLoopSync: (v: boolean) => void
+  onToggleTempoSync: (v: boolean) => void
 }
 
 export function TrackCard({
@@ -32,88 +36,44 @@ export function TrackCard({
   playMode,
   startMode,
   stopMode,
+  loopSync,
+  tempoSync,
   onToggleReverse,
   onToggleOneShot,
   onChangePlayMode,
   onChangeStartMode,
-  onChangeStopMode
+  onChangeStopMode,
+  onToggleLoopSync,
+  onToggleTempoSync
 }: Props) {
-  const playbackFields = fields.filter((field) =>
-    field.canonical_id === 'track.reverse' ||
-    field.canonical_id === 'track.one_shot' ||
-    field.canonical_id === 'track.play_mode'
-  )
-
-  const timingFields = fields.filter((field) =>
-    field.canonical_id === 'track.start_mode' ||
-    field.canonical_id === 'track.stop_mode'
-  )
+  const playbackFields = fields.filter((f) => ['track.reverse','track.one_shot','track.play_mode'].includes(f.canonical_id))
+  const timingFields = fields.filter((f) => ['track.start_mode','track.stop_mode'].includes(f.canonical_id))
+  const syncFields = fields.filter((f) => ['track.loop_sync_sw','track.tempo_sync_sw'].includes(f.canonical_id))
 
   return (
     <div style={{ border: '1px solid #ddd', padding: 12, borderRadius: 8, marginBottom: 12 }}>
       <h4 style={{ marginTop: 0 }}>Track {trackIndex}</h4>
 
       <Section title="Playback">
-        {playbackFields.map((field) =>
-          renderField({
-            field,
-            reverse,
-            oneShot,
-            playMode,
-            startMode,
-            stopMode,
-            onToggleReverse,
-            onToggleOneShot,
-            onChangePlayMode,
-            onChangeStartMode,
-            onChangeStopMode
-          })
-        )}
+        {playbackFields.map((field) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
       </Section>
 
       <Section title="Timing">
-        {timingFields.map((field) =>
-          renderField({
-            field,
-            reverse,
-            oneShot,
-            playMode,
-            startMode,
-            stopMode,
-            onToggleReverse,
-            onToggleOneShot,
-            onChangePlayMode,
-            onChangeStartMode,
-            onChangeStopMode
-          })
-        )}
+        {timingFields.map((field) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
+      </Section>
+
+      <Section title="Sync">
+        {syncFields.map((field) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
       </Section>
     </div>
   )
 }
 
-function renderField({
-  field,
-  reverse,
-  oneShot,
-  playMode,
-  startMode,
-  stopMode,
-  onToggleReverse,
-  onToggleOneShot,
-  onChangePlayMode,
-  onChangeStartMode,
-  onChangeStopMode
-}: any) {
+function renderField(field: TrackField, state: any, actions: any) {
   if (field.canonical_id === 'track.play_mode') {
     return (
       <Row key={field.canonical_id}>
-        <EnumField
-          label={field.ui_label}
-          value={playMode}
-          options={field.values || ['MULTI', 'SINGLE']}
-          onChange={onChangePlayMode}
-        />
+        <EnumField label={field.ui_label} value={state.playMode} options={field.values || ['MULTI','SINGLE']} onChange={actions.onChangePlayMode} />
         <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
       </Row>
     )
@@ -122,12 +82,7 @@ function renderField({
   if (field.canonical_id === 'track.start_mode') {
     return (
       <Row key={field.canonical_id}>
-        <EnumField
-          label={field.ui_label}
-          value={startMode}
-          options={field.values || ['IMMEDIATE', 'FADE']}
-          onChange={onChangeStartMode}
-        />
+        <EnumField label={field.ui_label} value={state.startMode} options={field.values || ['IMMEDIATE','FADE']} onChange={actions.onChangeStartMode} />
         <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
       </Row>
     )
@@ -136,19 +91,32 @@ function renderField({
   if (field.canonical_id === 'track.stop_mode') {
     return (
       <Row key={field.canonical_id}>
-        <EnumField
-          label={field.ui_label}
-          value={stopMode}
-          options={field.values || ['IMMEDIATE', 'FADE', 'LOOP']}
-          onChange={onChangeStopMode}
-        />
+        <EnumField label={field.ui_label} value={state.stopMode} options={field.values || ['IMMEDIATE','FADE','LOOP']} onChange={actions.onChangeStopMode} />
         <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
       </Row>
     )
   }
 
-  const checked = field.canonical_id === 'track.reverse' ? reverse : oneShot
-  const onChange = field.canonical_id === 'track.reverse' ? onToggleReverse : onToggleOneShot
+  if (field.canonical_id === 'track.loop_sync_sw') {
+    return (
+      <Row key={field.canonical_id}>
+        <ToggleField label={field.ui_label} checked={state.loopSync} onChange={actions.onToggleLoopSync} />
+        <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+      </Row>
+    )
+  }
+
+  if (field.canonical_id === 'track.tempo_sync_sw') {
+    return (
+      <Row key={field.canonical_id}>
+        <ToggleField label={field.ui_label} checked={state.tempoSync} onChange={actions.onToggleTempoSync} />
+        <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+      </Row>
+    )
+  }
+
+  const checked = field.canonical_id === 'track.reverse' ? state.reverse : state.oneShot
+  const onChange = field.canonical_id === 'track.reverse' ? actions.onToggleReverse : actions.onToggleOneShot
 
   return (
     <Row key={field.canonical_id}>
@@ -172,11 +140,7 @@ function Row({ children }: any) {
 }
 
 function normalizeStatus(status?: string): 'confirmed' | 'provisional' | 'unknown' {
-  if (status === 'confirmed' || status === 'provisional' || status === 'unknown') {
-    return status
-  }
-  if (status === 'structurally_supported' || status === 'broad_scope_supported') {
-    return 'confirmed'
-  }
+  if (status === 'confirmed' || status === 'provisional' || status === 'unknown') return status
+  if (status === 'structurally_supported' || status === 'broad_scope_supported') return 'confirmed'
   return 'unknown'
 }
