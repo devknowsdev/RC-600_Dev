@@ -8,3 +8,30 @@ memory_sections:
         mapping_status: structurally_supported
         constraints:
           max_length: 12
+
+  - id: tracks
+    fields:
+      - canonical_id: track.reverse
+        ui_label: Reverse
+        mapping_status: provisional
+        values: [OFF, ON]
+
+      - canonical_id: track.one_shot
+        ui_label: One Shot
+        mapping_status: provisional
+        values: [OFF, ON]
+
+      - canonical_id: track.play_mode
+        ui_label: Play Mode
+        mapping_status: provisional
+        values: [MULTI, SINGLE]
+
+      - canonical_id: track.start_mode
+        ui_label: Start Mode
+        mapping_status: unknown
+        values: [IMMEDIATE, FADE]
+
+      - canonical_id: track.stop_mode
+        ui_label: Stop Mode
+        mapping_status: unknown
+        values: [IMMEDIATE, FADE, LOOP]
