@@ -7,12 +7,14 @@ export function TracksSection({ model }: any) {
     if (!section) return []
 
     return section.fields.filter((f: any) =>
-      f.canonical_id === 'track.reverse' || f.canonical_id === 'track.one_shot'
+      f.canonical_id === 'track.reverse' ||
+      f.canonical_id === 'track.one_shot' ||
+      f.canonical_id === 'track.play_mode'
     )
   }, [model])
 
   const [tracks, setTracks] = useState(
-    Array.from({ length: 6 }, () => ({ reverse: false, oneShot: false }))
+    Array.from({ length: 6 }, () => ({ reverse: false, oneShot: false, playMode: 'MULTI' }))
   )
 
   function updateTrack(index: number, updates: any) {
@@ -32,8 +34,10 @@ export function TracksSection({ model }: any) {
           fields={trackFields}
           reverse={t.reverse}
           oneShot={t.oneShot}
+          playMode={t.playMode}
           onToggleReverse={(v) => updateTrack(i, { reverse: v })}
           onToggleOneShot={(v) => updateTrack(i, { oneShot: v })}
+          onChangePlayMode={(v) => updateTrack(i, { playMode: v })}
         />
       ))}
     </section>
