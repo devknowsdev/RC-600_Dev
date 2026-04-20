@@ -29,6 +29,7 @@ export function TracksSection({ model }: any) {
         <TrackCard
           key={i}
           trackIndex={i + 1}
+          fields={trackFields}
           reverse={t.reverse}
           oneShot={t.oneShot}
           onToggleReverse={(v) => updateTrack(i, { reverse: v })}
