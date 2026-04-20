@@ -6,13 +6,7 @@ export function TracksSection({ model }: any) {
     const section = model?.memory_sections?.find((s: any) => s.id === 'tracks')
     if (!section) return []
 
-    return section.fields.filter((f: any) =>
-      f.canonical_id === 'track.reverse' ||
-      f.canonical_id === 'track.one_shot' ||
-      f.canonical_id === 'track.play_mode' ||
-      f.canonical_id === 'track.start_mode' ||
-      f.canonical_id === 'track.stop_mode'
-    )
+    return section.fields
   }, [model])
 
   const [tracks, setTracks] = useState(
@@ -21,7 +15,9 @@ export function TracksSection({ model }: any) {
       oneShot: false,
       playMode: 'MULTI',
       startMode: 'IMMEDIATE',
-      stopMode: 'IMMEDIATE'
+      stopMode: 'IMMEDIATE',
+      loopSync: false,
+      tempoSync: false
     }))
   )
 
@@ -45,11 +41,15 @@ export function TracksSection({ model }: any) {
           playMode={t.playMode}
           startMode={t.startMode}
           stopMode={t.stopMode}
+          loopSync={t.loopSync}
+          tempoSync={t.tempoSync}
           onToggleReverse={(v) => updateTrack(i, { reverse: v })}
           onToggleOneShot={(v) => updateTrack(i, { oneShot: v })}
           onChangePlayMode={(v) => updateTrack(i, { playMode: v })}
           onChangeStartMode={(v) => updateTrack(i, { startMode: v })}
           onChangeStopMode={(v) => updateTrack(i, { stopMode: v })}
+          onToggleLoopSync={(v) => updateTrack(i, { loopSync: v })}
+          onToggleTempoSync={(v) => updateTrack(i, { tempoSync: v })}
         />
       ))}
     </section>
