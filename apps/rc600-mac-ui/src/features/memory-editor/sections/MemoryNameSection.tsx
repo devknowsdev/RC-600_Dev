@@ -12,22 +12,35 @@ export function MemoryNameSection({ model }: any) {
 
   if (!field) return <div>Missing field</div>
 
+  const maxLength = field?.constraints?.max_length ?? 12
+  const status = normalizeStatus(field.mapping_status)
+
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <h2>Memory Name</h2>
-        <FieldStatusBadge status="confirmed" />
+        <FieldStatusBadge status={status} />
       </div>
 
       <TextField
         label={field.ui_label}
         value={value}
-        onChange={setValue}
+        onChange={(next) => setValue(next.slice(0, maxLength))}
       />
 
       <div style={{ fontSize: 12, color: '#666' }}>
-        {value.length}/12 characters
+        {value.length}/{maxLength} characters
       </div>
     </div>
   )
+}
+
+function normalizeStatus(status: string): 'confirmed' | 'provisional' | 'unknown' {
+  if (status === 'confirmed' || status === 'provisional' || status === 'unknown') {
+    return status
+  }
+  if (status === 'structurally_supported' || status === 'broad_scope_supported') {
+    return 'confirmed'
+  }
+  return 'unknown'
 }
