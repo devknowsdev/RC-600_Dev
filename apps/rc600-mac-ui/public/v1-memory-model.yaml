@@ -35,3 +35,13 @@ memory_sections:
         ui_label: Stop Mode
         mapping_status: unknown
         values: [IMMEDIATE, FADE, LOOP]
+
+      - canonical_id: track.loop_sync_sw
+        ui_label: Loop Sync
+        mapping_status: unknown
+        values: [OFF, ON]
+
+      - canonical_id: track.tempo_sync_sw
+        ui_label: Tempo Sync
+        mapping_status: unknown
+        values: [OFF, ON]
