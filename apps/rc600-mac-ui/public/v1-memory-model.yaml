@@ -1,0 +1,10 @@
+# copied from docs/reference/v1-memory-model.yaml for runtime access
+model: rc600_memory_v1
+memory_sections:
+  - id: name
+    fields:
+      - canonical_id: memory.name
+        ui_label: Memory Name
+        mapping_status: structurally_supported
+        constraints:
+          max_length: 12
