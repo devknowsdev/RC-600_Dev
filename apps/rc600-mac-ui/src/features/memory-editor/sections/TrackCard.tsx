@@ -1,10 +1,12 @@
 import { ToggleField } from '../../../components/fields/ToggleField'
 import { FieldStatusBadge } from '../../../components/fields/FieldStatusBadge'
+import { EnumField } from '../../../components/fields/EnumField'
 
 type TrackField = {
   canonical_id: string
   ui_label: string
   mapping_status?: string
+  values?: string[]
 }
 
 type Props = {
@@ -12,8 +14,10 @@ type Props = {
   fields: TrackField[]
   reverse: boolean
   oneShot: boolean
+  playMode: string
   onToggleReverse: (v: boolean) => void
   onToggleOneShot: (v: boolean) => void
+  onChangePlayMode: (v: string) => void
 }
 
 export function TrackCard({
@@ -21,8 +25,10 @@ export function TrackCard({
   fields,
   reverse,
   oneShot,
+  playMode,
   onToggleReverse,
-  onToggleOneShot
+  onToggleOneShot,
+  onChangePlayMode
 }: Props) {
   return (
     <div style={{ border: '1px solid #ddd', padding: 12, borderRadius: 8, marginBottom: 12 }}>
@@ -30,14 +36,25 @@ export function TrackCard({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {fields.map((field) => {
+          if (field.canonical_id === 'track.play_mode') {
+            return (
+              <div key={field.canonical_id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <EnumField
+                  label={field.ui_label}
+                  value={playMode}
+                  options={field.values || ['MULTI', 'SINGLE']}
+                  onChange={onChangePlayMode}
+                />
+                <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
+              </div>
+            )
+          }
+
           const checked = field.canonical_id === 'track.reverse' ? reverse : oneShot
           const onChange = field.canonical_id === 'track.reverse' ? onToggleReverse : onToggleOneShot
 
           return (
-            <div
-              key={field.canonical_id}
-              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-            >
+            <div key={field.canonical_id} style={{ display: 'flex', justifyContent: 'space-between' }}>
               <ToggleField
                 label={field.ui_label}
                 checked={checked}
