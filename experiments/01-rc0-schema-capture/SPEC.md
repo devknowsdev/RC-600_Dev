@@ -2,7 +2,8 @@
 id: exp-01-rc0-schema-capture
 title: Experiment 01 — RC0 Schema Capture
 surface: experiment
-evidence: inference
+evidence: experiment
+experiment_path: experiments/01-rc0-schema-capture
 confidence: medium
 last_verified: 2026-04-20
 ---
@@ -11,58 +12,44 @@ last_verified: 2026-04-20
 
 ## Status
 
-**Not yet run.** Awaiting a real `MEMORY01A.RC0` file from the pedal.
+**Run 2026-04-20.** Files uploaded to Claude project, read via project knowledge search.
+See `results/RUNLOG.md` for full findings and method deviation notes.
 
 ## Hypothesis
 
-The `.RC0` files stored in `ROLAND/DATA/` on the RC-600's USB drive are XML documents. The element names and nesting structure correspond to the parameter sections in the RC-600 Parameter Guide.
+The `.RC0` files stored in `ROLAND/DATA/` on the RC-600's USB drive are XML documents.
 
-This follows from:
-- rc600editor.com referring to editing "the actual loppers xml files"
-- The RC-500 / RC-505 community establishing XML as the storage format for related products
-- RC-Editor changelog referencing external XML editor support
+**Result: CONFIRMED.** All four uploaded files (`MEMORY001A_RC0.xml`, `MEMORY001B_RC0.xml`, `SYSTEM1_RC0.xml`, `RHYTHM_RC0.xml`) are valid UTF-8 XML.
 
-`evidence: inference` until a real file is inspected.
+## Key findings
 
-## Method
+1. **Root structure:** `<database name="RC-600" revision="0"><mem id="0">...</mem></database>`
 
-1. Power off the RC-600.
-2. Put into USB Storage mode: navigate to `MENU → USB → Storage` (or hold `[MENU]` while powering on — verify against Owner's Manual).
-3. Connect USB-B to Mac.
-4. Confirm the `ROLAND` volume mounts in Finder.
-5. Navigate to `ROLAND/DATA/`.
-6. Record all filenames and sizes present.
-7. Copy `MEMORY01A.RC0` (use a customised memory for more interesting data).
-8. Copy `MEMORY01B.RC0` if it exists.
-9. Copy the system file (name unknown — document whatever is present).
-10. Open `MEMORY01A.RC0` in a plain text editor. Confirm XML or binary.
-11. If XML: record root element, direct children, tree to at least 3 levels deep.
-12. Upload all captured files to `experiments/01-rc0-schema-capture/results/`.
+2. **Opaque field encoding:** Parameter values use single-letter child elements (A, B, C...) with numeric values. No human-readable parameter names in the XML. A lookup table is required to decode field meanings.
 
-## Capture
+3. **Top-level element categories confirmed:**
+   - Memory name (`<n>`, ASCII-encoded, 12 chars)
+   - Tracks 1–6 (`<TRACK1>`–`<TRACK6>`, 25 fields each)
+   - Master, REC, PLAY, RHYTHM settings
+   - Internal CTL: 2 layers × 5 tracks × 2 targets + 3 layers × 9 pedals
+   - External CTL: CTL1–4 and EXP1–2
+   - All 16 ASSIGN slots (`<ASSIGN1>`–`<ASSIGN16>`, 10 fields each)
+   - INPUT, ROUTING, MIXER
+   - EQ per input (EQ_MIC1, EQ_MIC2, EQ_INST1L seen; full list unknown)
 
-Record in `results/RUNLOG.md`:
-- Firmware version shown at device startup
-- macOS version
-- Whether file is readable text or binary
-- Root element name (if XML)
-- File size of `MEMORY01A.RC0`
-- Whether `MEMORY01B.RC0` exists and its size vs A variant
-- Full listing of all files in `ROLAND/DATA/`
-- First 60 lines of `MEMORY01A.RC0`
+4. **A/B files:** Both variants have identical structure with different values — consistent with swap-buffer hypothesis.
 
-## Expected result
+5. **Input/Track FX storage location:** Not identified in these files. Requires further inspection.
 
-File is XML. Root element contains children corresponding to Parameter Guide sections: track settings, rhythm, assign/control, input FX, track FX, MIDI settings, system. Element names map to the Parameter Guide.
+## Deliverables
 
-## Alternative outcomes
+- `results/RUNLOG.md` — full run log with findings
+- `results/rc0-structure.yaml` — element tree skeleton
 
-**Binary file:** Note magic bytes and size. This would constrain the authoring surface significantly. The RC-Editor codebase (`paulelong/RCEditor`, open source) would be the primary decoding reference.
+## Open items
 
-**XML with opaque codes:** Extractable but requires a lookup table. Same reference.
-
-**A/B files serve different purposes:** Document the actual relationship. Working hypothesis: A=active, B=previous write (swap buffer) — but this is `evidence: inference`.
-
-## Deliverable
-
-After running, produce `results/rc0-structure.yaml` — element tree skeleton (names and nesting only, no values). Update this SPEC's frontmatter to `evidence: experiment` once results exist.
+- Single-letter field lookup table (requires RC-Editor source cross-reference)
+- Full EQ element list
+- Input FX and Track FX storage location
+- Physical drive mount observation (file sizes, full DATA/ listing)
+- SYSTEM1_RC0 and RHYTHM_RC0 full inspection
