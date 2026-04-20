@@ -2,92 +2,69 @@
 id: meta-methodology
 title: Methodology
 surface: meta
-live_version: "12.x"
-max_version: "8.6"
+firmware_version: "1.50"
 evidence: inference
 confidence: high
-last_verified: 2026-04-16
+last_verified: 2026-04-20
 ---
 
 # Methodology
 
-This document consolidates the rules the repository holds itself to. It replaces
-the previous `expert-repo-vision.md`, `knowledge-standards.md`, `research-workflow.md`,
-and the habits section of the curriculum.
+This document consolidates the rules this repository holds itself to. It is adapted from the methodology established in `ableton_dev_2` and recalibrated for the Boss RC-600 hardware domain.
 
-If you are writing a note, skim this first. If you are reading a note, this is
-the contract it is written under.
+If you are writing a note, skim this first. If you are reading a note, this is the contract it is written under.
 
 ---
 
 ## 1. Evidence classes
 
-Every technical claim belongs to one of four classes. They are declared in
-frontmatter (`evidence:`) and are the basis of how much trust a reader should
-extend.
+Every technical claim belongs to one of four classes. They are declared in frontmatter (`evidence:`) and are the basis of how much trust a reader should extend.
 
-**official** — Supported by a cited official source. The frontmatter must
-include `source:` with a URL or an exact doc+section reference. If the source
-ever disappears, the claim drops to `inference` until re-sourced.
+**official** — Supported by a cited official source: the RC-600 Owner's Manual, Parameter Guide, Roland/Boss support articles, or firmware release notes. The frontmatter must include `source:` with a URL or exact doc+section reference.
 
-**experiment** — Supported by an experiment run in this repository. The
-frontmatter must include `experiment_path:` pointing to a directory in
-`experiments/` whose `results/` folder contains actual captured output. If the
-experiment has not been run, this class cannot be used — even if the author is
-confident the experiment would succeed.
+**experiment** — Supported by an experiment run on real hardware and documented in this repository. The frontmatter must include `experiment_path:` pointing to a directory in `experiments/` whose `results/` folder contains actual captured output. If the experiment has not been run, this class cannot be used.
 
-**inference** — A reasoned deduction from other verified facts. The note must
-say what it is inferring from. Lower trust. Do not write "this is clearly true"
-here; write "this follows if A and B hold."
+**inference** — A reasoned deduction from other verified facts. The note must say what it is inferring from. Lower trust. Do not write "this is clearly true" here; write "this follows if A and B hold."
 
-**open** — A question not yet resolved. This is the frontier layer. Open
-questions are first-class content, not failures.
+**open** — A question not yet resolved. This is the frontier layer. Open questions are first-class content, not failures.
 
-A single note may contain multiple claims with different classes. The
-frontmatter records the strongest class present; inline annotations can
-downgrade individual claims.
+A single note may contain multiple claims with different classes. The frontmatter records the strongest class present; inline annotations can downgrade individual claims.
 
 ## 2. The five questions every deep note answers
-
-A note on a technical topic should make these easy to find:
 
 1. **What is the topic?** One sentence, concrete.
 2. **What is verified?** What the cited sources or experiments clearly support.
 3. **What is uncertain?** What remains to be confirmed and why it matters.
-4. **Why does this matter?** What decision or design depends on it.
-5. **What consequence follows?** Code, test, or documentation implication.
+4. **Why does this matter?** What decision or workflow depends on it.
+5. **What consequence follows?** Script, tool, template, or principle implication.
 
-If a note has no answer to question 5, it is probably describing rather than
-concluding. That is legitimate for reference material but not for principles
-or research.
+If a note has no answer to question 5, it is probably describing rather than concluding. That is legitimate for reference material but not for principles or research.
 
 ## 3. Separate fact from implication
 
 Inside a note:
 
 - **Verified** — what the evidence directly supports.
-- **Implication** — what probably follows for design.
+- **Implication** — what probably follows for design or workflow.
 - **Risk** — what might still go wrong.
-- **Action** — what to do differently in code, tests, or docs.
-
-The previous version of this repo blurred these, which is how speculative
-advice ended up reading like verified fact.
+- **Action** — what to do differently in scripts, memory setup, or performance workflow.
 
 ## 4. Edge cases are first-class
 
 For every topic where edge cases plausibly matter, ask:
 
-- What happens with zero tracks, devices, or clips?
-- What happens when the user changes selection mid-operation?
-- What happens with multiple instances of the device?
-- What happens after save and reload?
-- What happens under automation?
-- What happens in undo/redo?
-- What happens across Live versions?
-- What happens across macOS and Windows?
+- What happens when the memory slot is empty (no WAV recorded)?
+- What happens when the pedal loses power mid-recording?
+- What happens when connected via USB while BOSS Tone Studio is also running?
+- What happens when you import a WAV that is not 44.1 kHz / 32-bit / stereo?
+- What happens when all 16 ASSIGN slots are used?
+- What happens when you connect two RC-600 units together?
+- What happens after factory reset (MEMORY only vs SYSTEM only vs full)?
+- What happens when firmware is updated with memories already written?
+- What happens on macOS vs Windows regarding ROLAND drive mounting?
+- What happens when a .RC0 file is edited externally and reimported?
 
-A note that ignores these when they apply is incomplete. This is the single
-biggest quality axis for Ableton-related work.
+A note that ignores these when they apply is incomplete.
 
 ## 5. Confidence discipline
 
@@ -95,90 +72,62 @@ biggest quality axis for Ableton-related work.
 | --- | --- |
 | high | `evidence: official` or `evidence: experiment` with direct support |
 | medium | Evidence is strong but version-sensitive or partial |
-| low | Mostly inference; would benefit from direct Live/Max validation |
+| low | Mostly inference; would benefit from direct hardware validation |
 
-`confidence: high` with `evidence: inference` is a lint error. If you are
-highly confident and cannot cite, run an experiment.
+`confidence: high` with `evidence: inference` is a lint error.
 
 ## 6. Experiments before claims
 
 An experiment has the shape:
 
 - **Hypothesis** — what we expect to observe and why.
-- **Method** — steps concrete enough that another person can reproduce.
-- **Capture** — what data to record (console output, `.als` state,
-  screenshots, timings).
+- **Method** — steps concrete enough that another person can reproduce on real hardware.
+- **Capture** — what data to record (file contents, MIDI log, display state, file sizes).
 - **Expected result** — the outcome that would confirm the hypothesis.
 - **Alternative outcomes** — what other outcomes mean.
 
-Experiments live in `experiments/<nn-slug>/`. The `SPEC.md` is written before
-running; `results/` is populated when running; `RUNLOG.md` in results captures
-the specific environment and what was seen.
+Experiments live in `experiments/<nn-slug>/`. The `SPEC.md` is written before running; `results/` is populated when running; `RUNLOG.md` captures the specific hardware, firmware version, and OS.
 
-Until `results/` contains data, any note that references the experiment must
-cite it as `evidence: inference`, not `evidence: experiment`.
+Until `results/` contains data, any note that references the experiment must cite it as `evidence: inference`, not `evidence: experiment`.
 
 ## 7. Source, inference, and the boundary
 
-The previous repo's single most damaging failure was citing experiments that
-did not exist. To prevent recurrence:
-
-- The frontmatter linter fails any note with `evidence: experiment` whose
-  `experiment_path` does not resolve.
-- Cross-references to examples or experiments that do not yet exist use the
-  tag `planned:` rather than presenting them as existing.
-- "We have a utility that demonstrates..." is only a valid sentence when that
-  utility exists at a specific path in this repo.
+- The frontmatter linter fails any note with `evidence: experiment` whose `experiment_path` does not resolve.
+- Cross-references to files, memory examples, or scripts that do not yet exist use the tag `planned:` rather than presenting them as existing.
+- "We have a script that does..." is only a valid sentence when that script exists at a specific path in this repo.
 
 ## 8. Version sensitivity
 
-Live and Max change. Our target stack is **Live 12 + Max 8.6** (see README).
+Target firmware: **RC-600 v1.50**.
 
-- Reference facts are tagged `verified_in: "12.1"` (or the actual version the
-  source doc covers).
-- Features introduced after 12.1 use `available_since: "12.x"`.
-- Features deprecated or changed get a note in `docs/research/` and a link
-  from the affected reference page.
+- Reference facts are tagged `verified_in: "1.50"`.
+- Features introduced in later firmware use `available_since: "x.xx"`.
+- If firmware version for a behavior is unknown, mark it `firmware_version: unknown` and add an open research question.
 
-Do not silently document a Live 12.3 feature without flagging it. The repo is
-used by an LLM whose training data may be older; hiding version info causes
-silent errors.
+## 9. Hardware realism
 
-## 9. Platform realism for M4L devices
+When a note discusses RC-600 memory or workflow design, consider:
 
-When a note discusses Max for Live device design, it should think about:
-
-- Parameter identity and recall across set saves.
-- Undo flooding from internal modulation.
-- Multi-instance behavior and name scoping.
-- CPU and latency in a real session.
-- Frozen vs unfrozen source separation.
-- UI behavior across Live color themes.
-- Push display and banking, if Push support is intended.
-
-A note that ignores these for a device-design topic is making the prototype /
-product mistake.
+- ASSIGN budget: 16 slots per memory.
+- Save/recall: does the parameter persist after power cycle?
+- USB storage mode vs MIDI mode: the pedal cannot do both simultaneously.
+- WAV constraints: 32-bit float, 44.1 kHz, stereo, 512 kB-pad multiple.
+- On-device naming: 12-character limit.
+- Memory count: 99 slots total.
 
 ## 10. What to avoid
 
 - Undocumented claims presented as fact.
-- Long notes with no named consequence.
 - Summaries of official docs with no added judgment.
-- Innovation notes with no implementation path.
-- Edge-case observations with no reproduction conditions.
-- Files that duplicate official docs verbatim — link instead.
+- Phantom references: scripts, files, or experiments that do not exist in this repo.
 - Multiple files on the same topic that do not cross-reference.
 
 ## 11. What success looks like
 
-A good artifact in this repo helps a future AI or a future human do at least
-one of these better:
+A good artifact in this repo helps a future AI or human do at least one of these better:
 
-- reason more accurately about a Live API question,
-- implement more safely,
-- test more intelligently,
-- diagnose more deeply when something goes wrong,
-- preserve compatibility more carefully across releases,
-- invent new tooling grounded in the real platform.
-
-If a proposed file does none of these, it probably does not belong.
+- reason more accurately about RC-600 behavior or limitations,
+- build memory setups faster and more correctly,
+- debug unexpected pedal behavior,
+- design AI-assisted workflow tools grounded in the real device,
+- preserve workflow integrity across firmware updates.
