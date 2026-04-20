@@ -1,0 +1,133 @@
+# RC0 Element Structure — MEMORY file skeleton
+# Derived from: MEMORY001A_RC0.xml and MEMORY001B_RC0.xml
+# Evidence: experiment (files uploaded to project, read via project knowledge search)
+# Session: 2026-04-20, Claude Sonnet bootstrap session
+# Status: PARTIAL — opaque single-letter fields require lookup table for full decoding
+# See: RUNLOG.md for full findings
+
+root:
+  element: database
+  attributes:
+    name: "RC-600"
+    revision: "0"
+  children:
+    - element: mem
+      attributes:
+        id: "0"  # memory slot number (0-indexed)
+      children:
+
+        - element: n
+          description: Memory name, ASCII-encoded. 12 characters (A-L), space-padded.
+          fields: {A: char1, B: char2, C: char3, D: char4, E: char5, F: char6,
+                   G: char7, H: char8, I: char9, J: char10, K: char11, L: char12}
+          note: Values are ASCII decimal codes. e.g. 77=M, 101=e, 32=space.
+
+        - element: TRACK1  # also TRACK2..TRACK6
+          description: Per-track parameters. 25 fields (A-Y). Meaning of each field unknown without lookup table.
+          field_count: 25
+          fields_observed: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y]
+          evidence: experiment
+          note: Field meanings inferred from Parameter Guide but not confirmed. See RUNLOG.
+
+        - element: MASTER
+          description: Master-level settings. 4 fields (A-D).
+          field_count: 4
+          fields_observed: [A, B, C, D]
+
+        - element: REC
+          description: Recording settings. 6 fields (A-F).
+          field_count: 6
+          fields_observed: [A, B, C, D, E, F]
+
+        - element: PLAY
+          description: Playback settings. 8 fields (A-H).
+          field_count: 8
+          fields_observed: [A, B, C, D, E, F, G, H]
+
+        - element: RHYTHM
+          description: Rhythm settings. 13 fields (A-M).
+          field_count: 13
+          fields_observed: [A, B, C, D, E, F, G, H, I, J, K, L, M]
+
+        # Internal CTL: 2 layers × 5 tracks × 2 targets (FX + TRACK) = 20 elements
+        # Pattern: ICTL{layer}_TRACK{n}_{FX|TRACK}
+        - element: ICTL1_TRACK1_FX  # pattern: ICTL{1|2}_TRACK{1-5}_{FX|TRACK}
+          description: Internal CTL assignment for track FX or track control. 3 fields (A-C).
+          field_count: 3
+          fields_observed: [A, B, C]
+          note: ICTL1 and ICTL2 layers observed. TRACK1-TRACK5 only (TRACK6 not seen in ICTL).
+
+        # Internal CTL: 3 layers × 9 pedals = 27 elements
+        # Pattern: ICTL{layer}_PEDAL{n}
+        - element: ICTL1_PEDAL1  # pattern: ICTL{1|2|3}_PEDAL{1-9}
+          description: Internal CTL assignment for footswitch. 3 fields (A-C).
+          field_count: 3
+          fields_observed: [A, B, C]
+          note: 3 ICTL layers × 9 pedals observed.
+
+        # External CTL: CTL1-4 and EXP1-2
+        - element: ECTL_CTL1  # pattern: ECTL_CTL{1-4}
+          description: External CTL jack assignment. 4 fields (A-D).
+          field_count: 4
+          fields_observed: [A, B, C, D]
+
+        - element: ECTL_EXP1  # pattern: ECTL_EXP{1-2}
+          description: External expression pedal assignment. 4 fields (A-D).
+          field_count: 4
+          fields_observed: [A, B, C, D]
+
+        # ASSIGN slots 1-16 (16 total, confirms the 16-slot limit)
+        - element: ASSIGN1  # pattern: ASSIGN{1-16}
+          description: ASSIGN slot. 10 fields (A-J). All 16 slots confirmed present.
+          field_count: 10
+          fields_observed: [A, B, C, D, E, F, G, H, I, J]
+          field_inference:  # evidence: inference — not confirmed without lookup table
+            A: enabled (0 or 1)
+            B: source (numeric code)
+            C: source_channel_or_qualifier
+            D: source_action_or_min
+            E: unknown
+            F: source_max  # 127 for CC, 255 for some others
+            G: target (numeric code)  # values seen: 86, 407, 95, 97, 226, 241, 230, 225, 185, 261, 166, 171, 290, 301, 360
+            H: target_qualifier
+            I: target_min
+            J: target_max
+
+        - element: INPUT
+          description: Input settings (routing, sensitivity, phantom). 13 fields (A-M).
+          field_count: 13
+          fields_observed: [A, B, C, D, E, F, G, H, I, J, K, L, M]
+
+        - element: o
+          description: Unknown. Lowercase element name. 4 fields (A-D). Possibly output settings.
+          field_count: 4
+          fields_observed: [A, B, C, D]
+          note: Unusual lowercase name. May be output routing or a system flag.
+
+        - element: ROUTING
+          description: Output routing matrix. 19 fields (A-S).
+          field_count: 19
+          fields_observed: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S]
+
+        - element: MIXER
+          description: Mixer levels and panning. 22 fields (A-V).
+          field_count: 22
+          fields_observed: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V]
+
+        - element: EQ_MIC1  # also EQ_MIC2, EQ_INST1L (and presumably others)
+          description: EQ settings per input. 12 fields (A-L).
+          field_count: 12
+          fields_observed: [A, B, C, D, E, F, G, H, I, J, K, L]
+          note: EQ_MIC1, EQ_MIC2, EQ_INST1L confirmed. Full list of EQ elements unknown — may include EQ_INST1R, EQ_INST2L/R, EQ_LINE1L/R etc.
+
+        # NOT YET OBSERVED in these files:
+        # - Input FX parameter blocks (likely separate elements or within INPUT)
+        # - Track FX parameter blocks (likely per-track or in TRACK elements)
+        # - Full EQ element list
+        # - Any elements specific to SYSTEM1_RC0 or RHYTHM_RC0
+
+unmapped_or_uncertain:
+  - element: "<o>"  # lowercase, meaning unknown
+  - field_meanings: "All single-letter fields (A, B, C...) within all elements require lookup table"
+  - track6_ictl: "TRACK6 not seen in ICTL elements — may be absent by design or truncated in capture"
+  - fx_blocks: "Input FX and Track FX parameter storage location not identified"
