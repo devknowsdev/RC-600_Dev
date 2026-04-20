@@ -2,12 +2,16 @@
 """
 lint-frontmatter.py — Validate YAML frontmatter in repo markdown files.
 
+Adapted for RC-600_Dev from ableton_dev_2.
+Removed live_version / max_version requirements.
+Added firmware_version requirement for surface: reference.
+
 Usage:
     python3 tools/lint-frontmatter.py [--strict] [path ...]
 
 If no paths given, scans:
     docs/reference/  docs/principles/  docs/research/
-    docs/curriculum/  docs/adr/  docs/_meta/  experiments/*/SPEC.md
+    docs/adr/  docs/_meta/  experiments/*/SPEC.md
 
 Exit codes:
     0 — all files pass
@@ -19,7 +23,7 @@ import sys
 import os
 import re
 import glob
-from datetime import date, timedelta
+from datetime import date
 
 try:
     import yaml
@@ -27,11 +31,11 @@ except ImportError:
     print("ERROR: PyYAML not installed. pip install pyyaml", file=sys.stderr)
     sys.exit(1)
 
-REQUIRED_FIELDS = {"id", "title", "surface", "live_version", "max_version",
-                   "evidence", "confidence", "last_verified"}
+REQUIRED_FIELDS = {"id", "title", "surface", "evidence", "confidence", "last_verified"}
 
-VALID_SURFACES = {"m4l", "liveapi", "liveapi-js", "remote-script",
-                  "plugin-host", "link", "push", "packaging", "meta", "multi"}
+VALID_SURFACES = {
+    "meta", "reference", "principle", "research", "experiment", "adr", "example"
+}
 VALID_EVIDENCE = {"official", "experiment", "inference", "open"}
 VALID_CONFIDENCE = {"high", "medium", "low"}
 
@@ -40,7 +44,7 @@ ERROR_STALENESS_DAYS = 548  # ~18 months
 
 
 def extract_frontmatter(filepath):
-    """Return (yaml_dict, errors) from file. errors is a list of strings."""
+    """Return (yaml_dict, errors) from file."""
     errors = []
     try:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -72,33 +76,40 @@ def validate(filepath, data, all_ids, repo_root):
     missing = REQUIRED_FIELDS - set(data.keys())
     if missing:
         errors.append(f"Missing required fields: {', '.join(sorted(missing))}")
-        return errors, warnings  # can't check much else
+        return errors, warnings
 
-    # Field value validation
+    # Surface
     if data["surface"] not in VALID_SURFACES:
-        errors.append(f"Invalid surface '{data['surface']}'. "
-                      f"Valid: {', '.join(sorted(VALID_SURFACES))}")
+        errors.append(
+            f"Invalid surface '{data['surface']}'. Valid: {', '.join(sorted(VALID_SURFACES))}"
+        )
 
+    # Evidence
     if data["evidence"] not in VALID_EVIDENCE:
-        errors.append(f"Invalid evidence '{data['evidence']}'. "
-                      f"Valid: {', '.join(sorted(VALID_EVIDENCE))}")
+        errors.append(
+            f"Invalid evidence '{data['evidence']}'. Valid: {', '.join(sorted(VALID_EVIDENCE))}"
+        )
 
+    # Confidence
     if data["confidence"] not in VALID_CONFIDENCE:
-        errors.append(f"Invalid confidence '{data['confidence']}'. "
-                      f"Valid: {', '.join(sorted(VALID_CONFIDENCE))}")
+        errors.append(
+            f"Invalid confidence '{data['confidence']}'. Valid: {', '.join(sorted(VALID_CONFIDENCE))}"
+        )
 
-    # Confidence/evidence consistency
-    # Meta-surface docs (repo methodology, schemas) are self-evidencing —
-    # they define rules, they don't claim platform facts.
-    if (data["confidence"] == "high"
-            and data["evidence"] in ("inference", "open")
-            and data["surface"] != "meta"):
+    # confidence: high requires strong evidence
+    # Meta-surface docs are self-evidencing (they define rules, not hardware facts)
+    if (
+        data["confidence"] == "high"
+        and data["evidence"] in ("inference", "open")
+        and data["surface"] != "meta"
+    ):
         errors.append("confidence: high requires evidence: official or experiment")
 
-    # Evidence-specific requirements
+    # evidence: official requires source
     if data["evidence"] == "official" and not data.get("source"):
-        errors.append("evidence: official requires a 'source' field with URL or doc reference")
+        errors.append("evidence: official requires a 'source' field")
 
+    # evidence: experiment requires experiment_path with non-empty results/
     if data["evidence"] == "experiment":
         exp_path = data.get("experiment_path")
         if not exp_path:
@@ -107,13 +118,20 @@ def validate(filepath, data, all_ids, repo_root):
             full = os.path.join(repo_root, exp_path)
             results = os.path.join(full, "results")
             if not os.path.isdir(results):
-                errors.append(f"experiment_path '{exp_path}' has no results/ directory")
+                errors.append(
+                    f"experiment_path '{exp_path}' has no results/ directory"
+                )
             else:
-                result_files = [f for f in os.listdir(results)
-                                if not f.startswith(".")]
+                result_files = [f for f in os.listdir(results) if not f.startswith(".")]
                 if not result_files:
-                    errors.append(f"experiment_path '{exp_path}/results/' is empty — "
-                                  "cannot claim evidence: experiment without results")
+                    errors.append(
+                        f"experiment_path '{exp_path}/results/' is empty — "
+                        "cannot claim evidence: experiment without results"
+                    )
+
+    # surface: reference requires firmware_version
+    if data["surface"] == "reference" and not data.get("firmware_version"):
+        errors.append("surface: reference requires 'firmware_version' field")
 
     # ID uniqueness
     doc_id = data["id"]
@@ -130,17 +148,9 @@ def validate(filepath, data, all_ids, repo_root):
         elif age > WARN_STALENESS_DAYS:
             warnings.append(f"last_verified is {age} days ago — consider re-verifying")
     except (ValueError, TypeError):
-        errors.append(f"last_verified '{data.get('last_verified')}' is not a valid ISO date")
-
-    # Cross-reference validation (related, supersedes)
-    for field in ("related", "supersedes"):
-        refs = data.get(field, [])
-        if refs and not isinstance(refs, list):
-            refs = [refs]
-        for ref_id in (refs or []):
-            # We can only fully validate after all files are scanned,
-            # so we collect and check in a second pass.
-            pass
+        errors.append(
+            f"last_verified '{data.get('last_verified')}' is not a valid ISO date"
+        )
 
     return errors, warnings
 
@@ -155,7 +165,6 @@ def find_files(repo_root, explicit_paths):
         "docs/reference/**/*.md",
         "docs/principles/**/*.md",
         "docs/research/**/*.md",
-        "docs/curriculum/**/*.md",
         "docs/adr/**/*.md",
         "docs/_meta/**/*.md",
         "experiments/[0-9]*/SPEC.md",
@@ -170,7 +179,6 @@ def main():
     strict = "--strict" in sys.argv
     explicit = [a for a in sys.argv[1:] if a != "--strict"]
 
-    # Find repo root (assume tool is in tools/)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_root = os.path.dirname(script_dir)
 
