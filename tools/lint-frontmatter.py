@@ -5,6 +5,7 @@ lint-frontmatter.py — Validate YAML frontmatter in repo markdown files.
 Adapted for RC-600_Dev from ableton_dev_2.
 Removed live_version / max_version requirements.
 Added firmware_version requirement for surface: reference.
+Restored second-pass cross-reference validation.
 
 Usage:
     python3 tools/lint-frontmatter.py [--strict] [path ...]
@@ -38,6 +39,9 @@ VALID_SURFACES = {
 }
 VALID_EVIDENCE = {"official", "experiment", "inference", "open"}
 VALID_CONFIDENCE = {"high", "medium", "low"}
+
+CROSS_REF_LIST_FIELDS = ("related", "supersedes")
+CROSS_REF_SINGLE_FIELDS = ("superseded_by",)
 
 WARN_STALENESS_DAYS = 365
 ERROR_STALENESS_DAYS = 548  # ~18 months
@@ -133,6 +137,25 @@ def validate(filepath, data, all_ids, repo_root):
     if data["surface"] == "reference" and not data.get("firmware_version"):
         errors.append("surface: reference requires 'firmware_version' field")
 
+    # Cross-reference field shape validation
+    for field in CROSS_REF_LIST_FIELDS:
+        value = data.get(field)
+        if value is None:
+            continue
+        if not isinstance(value, list):
+            errors.append(f"{field} must be a list of ids")
+            continue
+        for item in value:
+            if not isinstance(item, str) or not item.strip():
+                errors.append(f"{field} entries must be non-empty strings")
+
+    for field in CROSS_REF_SINGLE_FIELDS:
+        value = data.get(field)
+        if value is None:
+            continue
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"{field} must be a non-empty id string")
+
     # ID uniqueness
     doc_id = data["id"]
     if doc_id in all_ids:
@@ -153,6 +176,28 @@ def validate(filepath, data, all_ids, repo_root):
         )
 
     return errors, warnings
+
+
+def validate_cross_references(filepath, data, known_ids):
+    """Return cross-reference errors after all ids are known."""
+    errors = []
+
+    for field in CROSS_REF_LIST_FIELDS:
+        refs = data.get(field) or []
+        if not isinstance(refs, list):
+            continue  # shape errors handled in validate()
+        for ref_id in refs:
+            if isinstance(ref_id, str) and ref_id not in known_ids:
+                errors.append(f"{field} references unknown id '{ref_id}'")
+
+    for field in CROSS_REF_SINGLE_FIELDS:
+        ref_id = data.get(field)
+        if ref_id is None or not isinstance(ref_id, str):
+            continue  # missing/shape handled elsewhere or optional
+        if ref_id not in known_ids:
+            errors.append(f"{field} references unknown id '{ref_id}'")
+
+    return errors
 
 
 def find_files(repo_root, explicit_paths):
@@ -188,6 +233,7 @@ def main():
         return 0
 
     all_ids = {}
+    parsed_files = []
     total_errors = 0
     total_warnings = 0
 
@@ -202,6 +248,7 @@ def main():
             continue
 
         errors, warnings = validate(fpath, data, all_ids, repo_root)
+        parsed_files.append((fpath, data))
 
         for e in errors:
             print(f"ERROR  {rel}: {e}")
@@ -210,6 +257,14 @@ def main():
 
         total_errors += len(errors)
         total_warnings += len(warnings)
+
+    known_ids = set(all_ids.keys())
+    for fpath, data in parsed_files:
+        rel = os.path.relpath(fpath, repo_root)
+        errors = validate_cross_references(fpath, data, known_ids)
+        for e in errors:
+            print(f"ERROR  {rel}: {e}")
+        total_errors += len(errors)
 
     print(f"\n{'='*60}")
     print(f"Files checked: {len(files)}")
