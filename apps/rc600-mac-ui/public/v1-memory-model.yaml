@@ -45,3 +45,28 @@ memory_sections:
         ui_label: Tempo Sync
         mapping_status: unknown
         values: [OFF, ON]
+
+      - canonical_id: track.bounce_in
+        ui_label: Bounce In
+        mapping_status: unknown
+        values: [OFF, ON]
+
+      - canonical_id: track.input_sources.mic_1_2
+        ui_label: MIC 1/2
+        mapping_status: unknown
+        values: [OFF, ON]
+
+      - canonical_id: track.input_sources.inst1_l_r
+        ui_label: INST1 L/R
+        mapping_status: unknown
+        values: [OFF, ON]
+
+      - canonical_id: track.input_sources.inst2_l_r
+        ui_label: INST2 L/R
+        mapping_status: unknown
+        values: [OFF, ON]
+
+      - canonical_id: track.input_sources.rhythm
+        ui_label: Rhythm
+        mapping_status: unknown
+        values: [OFF, ON]
