@@ -1,14 +1,28 @@
 import type { TrackState } from '../memory-editor/sections/TrackCard'
 import type { SectionState } from '../schema/memoryModelTypes'
 
-// CanonicalMemoryState: full in-memory representation of one RC-600 memory.
-// Add a key here when a new section is implemented in the UI.
+// CanonicalMemoryState is the full in-memory representation of one RC-600 memory.
+// Sections are added here as they are implemented in the UI.
+// buildMemorySummary reads from this type — not from individual section states.
 export type CanonicalMemoryState = {
   name: string
   tracks: TrackState[]
-  rec: SectionState
-  play: SectionState
-  rhythm: SectionState
+  // rec: RecState       — add when RecordSection is implemented
+  // play: PlayState     — add when PlaybackSection is implemented
+  // rhythm: RhythmState — add when RhythmSection is implemented
+}
+
+export function buildInitialCanonicalState(): CanonicalMemoryState {
+  return {
+    name: '',
+    tracks: [],
+  }
+}
+
+// Reads track state using canonical_id keys (e.g. 'track.reverse')
+// to match the schema-driven TrackState shape: { [canonicalId: string]: unknown }
+function get(track: TrackState, canonicalId: string): unknown {
+  return track[canonicalId]
 }
 
 export function buildInitialCanonicalState(): CanonicalMemoryState {
@@ -42,53 +56,36 @@ function tracksWhere(
 
 export function buildMemorySummary(memory: CanonicalMemoryState): string[] {
   const lines: string[] = []
-  const { tracks, rec, play, rhythm } = memory
+  const { tracks } = memory
+
+  if (!tracks || tracks.length === 0) {
+    return ['No track data yet.']
+  }
 
   // Name
-  if (memory.name) lines.push(`Memory: ${memory.name}`)
-
-  // Tracks
-  if (tracks && tracks.length > 0) {
-    const reverse   = tracksWhere(tracks, (t) => isOn(t as SectionState, 'track.reverse'))
-    const oneShot   = tracksWhere(tracks, (t) => isOn(t as SectionState, 'track.one_shot'))
-    const single    = tracksWhere(tracks, (t) => isValue(t as SectionState, 'track.play_mode', 'SINGLE'))
-    const loopSync  = tracksWhere(tracks, (t) => isOn(t as SectionState, 'track.loop_sync_sw'))
-    const tempoSync = tracksWhere(tracks, (t) => isOn(t as SectionState, 'track.tempo_sync_sw'))
-    const bounceIn  = tracksWhere(tracks, (t) => isOn(t as SectionState, 'track.bounce_in'))
-
-    if (reverse.length > 0)   lines.push(`Reverse on tracks ${reverse.join(', ')}`)
-    if (oneShot.length > 0)   lines.push(`One Shot on tracks ${oneShot.join(', ')}`)
-    if (single.length > 0)    lines.push(`Single play mode on tracks ${single.join(', ')}`)
-    if (loopSync.length > 0)  lines.push(`Loop Sync on tracks ${loopSync.join(', ')}`)
-    if (tempoSync.length > 0) lines.push(`Tempo Sync on tracks ${tempoSync.join(', ')}`)
-    if (bounceIn.length > 0)  lines.push(`Bounce In on tracks ${bounceIn.join(', ')}`)
+  if (memory.name) {
+    lines.push(`Memory: ${memory.name}`)
   }
 
-  // Record
-  if (rec && Object.keys(rec).length > 0) {
-    if (isOn(rec, 'rec.auto_rec_sw')) lines.push('Auto Record enabled')
-    if (isOn(rec, 'rec.bounce_sw'))   lines.push('Bounce recording enabled')
-    const action = val(rec, 'rec.action')
-    if (action === 'REC->PLAY') lines.push('Record action: rec then play')
-  }
+  // Track behaviors
+  const reverse   = tracksWhere(tracks, (t) => isOn(t, 'track.reverse'))
+  const oneShot   = tracksWhere(tracks, (t) => isOn(t, 'track.one_shot'))
+  const single    = tracksWhere(tracks, (t) => isValue(t, 'track.play_mode', 'SINGLE'))
+  const loopSync  = tracksWhere(tracks, (t) => isOn(t, 'track.loop_sync_sw'))
+  const tempoSync = tracksWhere(tracks, (t) => isOn(t, 'track.tempo_sync_sw'))
+  const bounceIn  = tracksWhere(tracks, (t) => isOn(t, 'track.bounce_in'))
 
-  // Playback
-  if (play && Object.keys(play).length > 0) {
-    if (isValue(play, 'play.single_track_change', 'LOOP_END'))
-      lines.push('Single track change: at loop end')
-    if (isValue(play, 'play.speed_change', 'LOOP_END'))
-      lines.push('Speed change: at loop end')
-  }
+  if (reverse.length > 0)   lines.push(`Reverse on tracks ${reverse.join(', ')}`)
+  if (oneShot.length > 0)   lines.push(`One Shot on tracks ${oneShot.join(', ')}`)
+  if (single.length > 0)    lines.push(`Single play mode on tracks ${single.join(', ')}`)
+  if (loopSync.length > 0)  lines.push(`Loop Sync on tracks ${loopSync.join(', ')}`)
+  if (tempoSync.length > 0) lines.push(`Tempo Sync on tracks ${tempoSync.join(', ')}`)
+  if (bounceIn.length > 0)  lines.push(`Bounce In on tracks ${bounceIn.join(', ')}`)
 
-  // Rhythm
-  if (rhythm && Object.keys(rhythm).length > 0) {
-    const genre = val(rhythm, 'rhythm.genre')
-    if (genre && genre !== 'ACOUSTIC') lines.push(`Rhythm genre: ${genre}`)
-    const startTrig = val(rhythm, 'rhythm.start_trig')
-    if (startTrig && startTrig !== 'LOOP_START') lines.push(`Rhythm starts: ${startTrig}`)
-    const stopTrig = val(rhythm, 'rhythm.stop_trig')
-    if (stopTrig && stopTrig !== 'OFF') lines.push(`Rhythm stops: ${stopTrig}`)
-  }
+  // Placeholder hooks for future sections:
+  // if (memory.rec) { ... }
+  // if (memory.play) { ... }
+  // if (memory.rhythm) { ... }
 
   if (lines.length === 0 || (lines.length === 1 && memory.name)) {
     lines.push('No notable behaviors configured yet.')

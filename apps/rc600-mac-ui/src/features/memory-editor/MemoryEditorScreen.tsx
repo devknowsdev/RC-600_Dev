@@ -7,14 +7,13 @@ import { PlaybackSection } from './sections/PlaybackSection'
 import { RhythmSection } from './sections/RhythmSection'
 import { MemorySummaryPanel } from '../memory-summary/MemorySummaryPanel'
 import { buildInitialCanonicalState } from '../memory-summary/buildMemorySummary'
-import { buildInitialSectionState } from '../schema/memoryModelTypes'
-import type { MemoryModel, SectionState } from '../schema/memoryModelTypes'
+import type { MemoryModel } from '../schema/memoryModelTypes'
 import type { TrackState } from './sections/TrackCard'
 import type { CanonicalMemoryState } from '../memory-summary/buildMemorySummary'
 
 export function MemoryEditorScreen() {
-  const [model, setModel]   = useState<MemoryModel | null>(null)
-  const [error, setError]   = useState<string | null>(null)
+  const [model, setModel] = useState<MemoryModel | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [memory, setMemory] = useState<CanonicalMemoryState>(buildInitialCanonicalState)
 
   useEffect(() => {
@@ -42,6 +41,14 @@ export function MemoryEditorScreen() {
     setMemory((prev) => ({ ...prev, tracks }))
   }
 
+  if (error) {
+    return <div style={{ padding: 20, color: 'red' }}>Failed to load schema: {error}</div>
+  }
+
+  function handleTracksChange(tracks: TrackState[]) {
+    setMemory((prev) => ({ ...prev, tracks }))
+  }
+
   function handleSectionChange(key: keyof Pick<CanonicalMemoryState, 'rec' | 'play' | 'rhythm'>) {
     return (canonicalId: string, value: unknown) => {
       setMemory((prev) => ({
@@ -58,11 +65,14 @@ export function MemoryEditorScreen() {
     <div style={{ display: 'flex', width: '100%', gap: 24, padding: 20 }}>
       {/* Center: editor */}
       <div style={{ flex: 1, maxWidth: 700 }}>
-        <MemoryNameSection model={model} onNameChange={handleNameChange} />
-        <TracksSection     model={model} onTracksChange={handleTracksChange} />
-        <RecordSection     model={model} state={memory.rec}    onFieldChange={handleSectionChange('rec')} />
-        <PlaybackSection   model={model} state={memory.play}   onFieldChange={handleSectionChange('play')} />
-        <RhythmSection     model={model} state={memory.rhythm} onFieldChange={handleSectionChange('rhythm')} />
+        <MemoryNameSection
+          model={model}
+          onNameChange={handleNameChange}
+        />
+        <TracksSection
+          model={model}
+          onTracksChange={handleTracksChange}
+        />
       </div>
 
       {/* Right: summary */}

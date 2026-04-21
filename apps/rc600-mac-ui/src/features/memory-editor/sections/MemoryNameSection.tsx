@@ -27,6 +27,12 @@ export function MemoryNameSection({ model, onNameChange }: Props) {
     onNameChange?.(trimmed)
   }
 
+  function handleChange(next: string) {
+    const trimmed = next.slice(0, maxLength)
+    setValue(trimmed)
+    onNameChange?.(trimmed)
+  }
+
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -34,7 +40,11 @@ export function MemoryNameSection({ model, onNameChange }: Props) {
         <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
       </div>
       <div style={{ marginTop: 8 }}>
-        <TextField label={field.ui_label} value={value} onChange={handleChange} />
+        <TextField
+          label={field.ui_label}
+          value={value}
+          onChange={handleChange}
+        />
       </div>
       <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
         {value.length}/{maxLength} characters
