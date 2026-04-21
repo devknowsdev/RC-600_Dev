@@ -6,9 +6,10 @@ import type { MemoryModel } from '../../../features/schema/memoryModelTypes'
 
 type Props = {
   model: MemoryModel
+  onNameChange?: (name: string) => void
 }
 
-export function MemoryNameSection({ model }: Props) {
+export function MemoryNameSection({ model, onNameChange }: Props) {
   const field = useMemo(() => {
     const section = model.memory_sections.find((s) => s.id === 'name')
     return section?.fields?.[0]
@@ -21,6 +22,12 @@ export function MemoryNameSection({ model }: Props) {
   const maxLength = field.constraints?.max_length ?? 12
   const status = normalizeStatus(field.mapping_status)
 
+  function handleChange(next: string) {
+    const trimmed = next.slice(0, maxLength)
+    setValue(trimmed)
+    onNameChange?.(trimmed)
+  }
+
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -32,7 +39,7 @@ export function MemoryNameSection({ model }: Props) {
         <TextField
           label={field.ui_label}
           value={value}
-          onChange={(next) => setValue(next.slice(0, maxLength))}
+          onChange={handleChange}
         />
       </div>
 
