@@ -19,6 +19,8 @@ export type FieldType =
 
 export type FieldConstraints = {
   max_length?: number
+  min?: number
+  max?: number
 }
 
 export type MemoryField = {
@@ -57,36 +59,41 @@ export type MemoryModel = {
 }
 
 // Generic section state: canonical_id → value
-// Used for flat sections (rec, play, rhythm).
-// TrackState (in TrackCard.tsx) is structurally identical.
 export type SectionState = { [canonicalId: string]: unknown }
 
 // Build initial state for a flat section from its field definitions.
-// Defaults: boolean enums → false, other enums → first value, integer/range → 0, string → ''
+// Defaults:
+// - boolean enums → false
+// - other enums → first value
+// - integer/range → min if present, otherwise 0
+// - string → ''
 export function buildInitialSectionState(fields: MemoryField[]): SectionState {
   const state: SectionState = {}
+
   for (const field of fields) {
     if (!field.type) continue
+
     const isBoolEnum =
       field.type === 'enum' &&
       Array.isArray(field.values) &&
       field.values.length === 2 &&
       field.values.includes('OFF') &&
       field.values.includes('ON')
+
     if (isBoolEnum) {
       state[field.canonical_id] = false
     } else if (field.type === 'enum' && Array.isArray(field.values) && field.values.length > 0) {
       state[field.canonical_id] = field.values[0]
     } else if (field.type === 'integer' || field.type === 'range') {
-      state[field.canonical_id] = 0
+      state[field.canonical_id] = field.constraints?.min ?? 0
     } else if (field.type === 'string') {
       state[field.canonical_id] = ''
     }
   }
+
   return state
 }
 
-// Helper: find a section by id
 export function findSection(
   model: MemoryModel,
   sectionId: string
