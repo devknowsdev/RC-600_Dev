@@ -20,7 +20,12 @@ export function MemoryNameSection({ model, onNameChange }: Props) {
   if (!field) return <div>Missing name field in schema</div>
 
   const maxLength = field.constraints?.max_length ?? 12
-  const status = normalizeStatus(field.mapping_status)
+
+  function handleChange(next: string) {
+    const trimmed = next.slice(0, maxLength)
+    setValue(trimmed)
+    onNameChange?.(trimmed)
+  }
 
   function handleChange(next: string) {
     const trimmed = next.slice(0, maxLength)
@@ -32,9 +37,8 @@ export function MemoryNameSection({ model, onNameChange }: Props) {
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ margin: 0 }}>Memory Name</h2>
-        <FieldStatusBadge status={status} />
+        <FieldStatusBadge status={normalizeStatus(field.mapping_status)} />
       </div>
-
       <div style={{ marginTop: 8 }}>
         <TextField
           label={field.ui_label}
@@ -42,7 +46,6 @@ export function MemoryNameSection({ model, onNameChange }: Props) {
           onChange={handleChange}
         />
       </div>
-
       <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
         {value.length}/{maxLength} characters
       </div>

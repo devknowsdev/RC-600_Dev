@@ -1,7 +1,5 @@
 // Types for the parsed v1-memory-model.yaml schema.
 // Keep in sync with docs/reference/v1-memory-model.yaml.
-// These types are intentionally permissive on optional fields
-// to stay compatible with partial/provisional schema entries.
 
 export type MappingStatus =
   | 'confirmed'
@@ -58,18 +56,40 @@ export type MemoryModel = {
   }
 }
 
+// Generic section state: canonical_id → value
+// Used for flat sections (rec, play, rhythm).
+// TrackState (in TrackCard.tsx) is structurally identical.
+export type SectionState = { [canonicalId: string]: unknown }
+
+// Build initial state for a flat section from its field definitions.
+// Defaults: boolean enums → false, other enums → first value, integer/range → 0, string → ''
+export function buildInitialSectionState(fields: MemoryField[]): SectionState {
+  const state: SectionState = {}
+  for (const field of fields) {
+    if (!field.type) continue
+    const isBoolEnum =
+      field.type === 'enum' &&
+      Array.isArray(field.values) &&
+      field.values.length === 2 &&
+      field.values.includes('OFF') &&
+      field.values.includes('ON')
+    if (isBoolEnum) {
+      state[field.canonical_id] = false
+    } else if (field.type === 'enum' && Array.isArray(field.values) && field.values.length > 0) {
+      state[field.canonical_id] = field.values[0]
+    } else if (field.type === 'integer' || field.type === 'range') {
+      state[field.canonical_id] = 0
+    } else if (field.type === 'string') {
+      state[field.canonical_id] = ''
+    }
+  }
+  return state
+}
+
 // Helper: find a section by id
 export function findSection(
   model: MemoryModel,
   sectionId: string
 ): MemorySection | undefined {
   return model.memory_sections.find((s) => s.id === sectionId)
-}
-
-// Helper: find a field by canonical_id within a section
-export function findField(
-  section: MemorySection,
-  canonicalId: string
-): MemoryField | undefined {
-  return section.fields.find((f) => f.canonical_id === canonicalId)
 }

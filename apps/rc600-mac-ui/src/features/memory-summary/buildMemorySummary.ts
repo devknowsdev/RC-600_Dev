@@ -1,4 +1,5 @@
 import type { TrackState } from '../memory-editor/sections/TrackCard'
+import type { SectionState } from '../schema/memoryModelTypes'
 
 // CanonicalMemoryState is the full in-memory representation of one RC-600 memory.
 // Sections are added here as they are implemented in the UI.
@@ -24,15 +25,25 @@ function get(track: TrackState, canonicalId: string): unknown {
   return track[canonicalId]
 }
 
-function isOn(track: TrackState, canonicalId: string): boolean {
-  const v = get(track, canonicalId)
+export function buildInitialCanonicalState(): CanonicalMemoryState {
+  return { name: '', tracks: [], rec: {}, play: {}, rhythm: {} }
+}
+
+// Reads a value from a section state by canonical_id key.
+function val(state: SectionState, id: string): unknown {
+  return state[id]
+}
+
+function isOn(state: SectionState, id: string): boolean {
+  const v = val(state, id)
   return v === true || v === 'ON'
 }
 
-function isValue(track: TrackState, canonicalId: string, value: string): boolean {
-  return get(track, canonicalId) === value
+function isValue(state: SectionState, id: string, value: string): boolean {
+  return val(state, id) === value
 }
 
+// Track-specific helpers
 function tracksWhere(
   tracks: TrackState[],
   predicate: (t: TrackState) => boolean
