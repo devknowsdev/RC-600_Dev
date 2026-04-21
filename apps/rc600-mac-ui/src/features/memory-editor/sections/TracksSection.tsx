@@ -1,7 +1,7 @@
 import { TrackCard } from './TrackCard'
 import { useState, useMemo } from 'react'
 
-export function TracksSection({ model }: any) {
+export function TracksSection({ model, onTracksChange }: any) {
   const trackFields = useMemo(() => {
     const section = model?.memory_sections?.find((s: any) => s.id === 'tracks')
     if (!section) return []
@@ -25,6 +25,7 @@ export function TracksSection({ model }: any) {
     const next = [...tracks]
     next[index] = { ...next[index], ...updates }
     setTracks(next)
+    onTracksChange?.(next)
   }
 
   return (
