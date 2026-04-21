@@ -1,35 +1,24 @@
 import type { TrackState } from '../memory-editor/sections/TrackCard'
 import type { SectionState } from '../schema/memoryModelTypes'
 
-// CanonicalMemoryState is the full in-memory representation of one RC-600 memory.
-// Sections are added here as they are implemented in the UI.
-// buildMemorySummary reads from this type — not from individual section states.
 export type CanonicalMemoryState = {
   name: string
   tracks: TrackState[]
-  // rec: RecState       — add when RecordSection is implemented
-  // play: PlayState     — add when PlaybackSection is implemented
-  // rhythm: RhythmState — add when RhythmSection is implemented
+  rec: SectionState
+  play: SectionState
+  rhythm: SectionState
 }
 
 export function buildInitialCanonicalState(): CanonicalMemoryState {
   return {
     name: '',
     tracks: [],
+    rec: {},
+    play: {},
+    rhythm: {},
   }
 }
 
-// Reads track state using canonical_id keys (e.g. 'track.reverse')
-// to match the schema-driven TrackState shape: { [canonicalId: string]: unknown }
-function get(track: TrackState, canonicalId: string): unknown {
-  return track[canonicalId]
-}
-
-export function buildInitialCanonicalState(): CanonicalMemoryState {
-  return { name: '', tracks: [], rec: {}, play: {}, rhythm: {} }
-}
-
-// Reads a value from a section state by canonical_id key.
 function val(state: SectionState, id: string): unknown {
   return state[id]
 }
@@ -43,7 +32,6 @@ function isValue(state: SectionState, id: string, value: string): boolean {
   return val(state, id) === value
 }
 
-// Track-specific helpers
 function tracksWhere(
   tracks: TrackState[],
   predicate: (t: TrackState) => boolean
@@ -62,12 +50,10 @@ export function buildMemorySummary(memory: CanonicalMemoryState): string[] {
     return ['No track data yet.']
   }
 
-  // Name
   if (memory.name) {
     lines.push(`Memory: ${memory.name}`)
   }
 
-  // Track behaviors
   const reverse   = tracksWhere(tracks, (t) => isOn(t, 'track.reverse'))
   const oneShot   = tracksWhere(tracks, (t) => isOn(t, 'track.one_shot'))
   const single    = tracksWhere(tracks, (t) => isValue(t, 'track.play_mode', 'SINGLE'))
@@ -81,11 +67,6 @@ export function buildMemorySummary(memory: CanonicalMemoryState): string[] {
   if (loopSync.length > 0)  lines.push(`Loop Sync on tracks ${loopSync.join(', ')}`)
   if (tempoSync.length > 0) lines.push(`Tempo Sync on tracks ${tempoSync.join(', ')}`)
   if (bounceIn.length > 0)  lines.push(`Bounce In on tracks ${bounceIn.join(', ')}`)
-
-  // Placeholder hooks for future sections:
-  // if (memory.rec) { ... }
-  // if (memory.play) { ... }
-  // if (memory.rhythm) { ... }
 
   if (lines.length === 0 || (lines.length === 1 && memory.name)) {
     lines.push('No notable behaviors configured yet.')
