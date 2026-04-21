@@ -55,15 +55,15 @@ export function TrackCard({
       <h4 style={{ marginTop: 0 }}>Track {trackIndex}</h4>
 
       <Section title="Playback">
-        {playbackFields.map((field) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
+        {playbackFields.map((field: TrackField) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
       </Section>
 
       <Section title="Timing">
-        {timingFields.map((field) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
+        {timingFields.map((field: TrackField) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
       </Section>
 
       <Section title="Sync">
-        {syncFields.map((field) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
+        {syncFields.map((field: TrackField) => renderField(field, { reverse, oneShot, playMode, startMode, stopMode, loopSync, tempoSync }, { onToggleReverse, onToggleOneShot, onChangePlayMode, onChangeStartMode, onChangeStopMode, onToggleLoopSync, onToggleTempoSync }))}
       </Section>
     </div>
   )
