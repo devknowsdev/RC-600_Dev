@@ -43,13 +43,13 @@ export function TracksSection({ model }: any) {
           stopMode={t.stopMode}
           loopSync={t.loopSync}
           tempoSync={t.tempoSync}
-          onToggleReverse={(v) => updateTrack(i, { reverse: v })}
-          onToggleOneShot={(v) => updateTrack(i, { oneShot: v })}
-          onChangePlayMode={(v) => updateTrack(i, { playMode: v })}
-          onChangeStartMode={(v) => updateTrack(i, { startMode: v })}
-          onChangeStopMode={(v) => updateTrack(i, { stopMode: v })}
-          onToggleLoopSync={(v) => updateTrack(i, { loopSync: v })}
-          onToggleTempoSync={(v) => updateTrack(i, { tempoSync: v })}
+          onToggleReverse={(v: boolean) => updateTrack(i, { reverse: v })}
+          onToggleOneShot={(v: boolean) => updateTrack(i, { oneShot: v })}
+          onChangePlayMode={(v: string) => updateTrack(i, { playMode: v })}
+          onChangeStartMode={(v: string) => updateTrack(i, { startMode: v })}
+          onChangeStopMode={(v: string) => updateTrack(i, { stopMode: v })}
+          onToggleLoopSync={(v: boolean) => updateTrack(i, { loopSync: v })}
+          onToggleTempoSync={(v: boolean) => updateTrack(i, { tempoSync: v })}
         />
       ))}
     </section>
