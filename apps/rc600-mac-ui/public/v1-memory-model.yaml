@@ -1,10 +1,13 @@
-# copied from docs/reference/v1-memory-model.yaml for runtime access
+# Runtime copy of docs/reference/v1-memory-model.yaml
+# type: is required for FieldRenderer to dispatch to the correct component.
+# Keep in sync with docs/reference/v1-memory-model.yaml.
 model: rc600_memory_v1
 memory_sections:
   - id: name
     fields:
       - canonical_id: memory.name
         ui_label: Memory Name
+        type: string
         mapping_status: structurally_supported
         constraints:
           max_length: 12
@@ -13,60 +16,120 @@ memory_sections:
     fields:
       - canonical_id: track.reverse
         ui_label: Reverse
-        mapping_status: provisional
+        type: enum
         values: [OFF, ON]
+        mapping_status: provisional
 
       - canonical_id: track.one_shot
         ui_label: One Shot
-        mapping_status: provisional
+        type: enum
         values: [OFF, ON]
+        mapping_status: provisional
 
       - canonical_id: track.play_mode
         ui_label: Play Mode
-        mapping_status: provisional
+        type: enum
         values: [MULTI, SINGLE]
+        mapping_status: provisional
+
+      - canonical_id: track.dub_mode
+        ui_label: Dub Mode
+        type: enum
+        values: [OVERDUB, REPLACE1, REPLACE2]
+        mapping_status: unknown
+
+      - canonical_id: track.fx_enabled
+        ui_label: FX
+        type: enum
+        values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.speed
+        ui_label: Speed
+        type: enum
+        values: [HALF, NORMAL, DOUBLE]
+        mapping_status: unknown
 
       - canonical_id: track.start_mode
         ui_label: Start Mode
-        mapping_status: unknown
+        type: enum
         values: [IMMEDIATE, FADE]
+        mapping_status: unknown
 
       - canonical_id: track.stop_mode
         ui_label: Stop Mode
-        mapping_status: unknown
+        type: enum
         values: [IMMEDIATE, FADE, LOOP]
-
-      - canonical_id: track.loop_sync_sw
-        ui_label: Loop Sync
         mapping_status: unknown
-        values: [OFF, ON]
 
-      - canonical_id: track.tempo_sync_sw
-        ui_label: Tempo Sync
+      - canonical_id: track.measure
+        ui_label: Measure
+        type: enum
+        values: [AUTO, FREE]
         mapping_status: unknown
-        values: [OFF, ON]
 
       - canonical_id: track.bounce_in
         ui_label: Bounce In
-        mapping_status: unknown
+        type: enum
         values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.loop_sync_sw
+        ui_label: Loop Sync
+        type: enum
+        values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.loop_sync_mode
+        ui_label: Loop Sync Mode
+        type: enum
+        values: [IMMEDIATE, MEASURE, LOOP_LENGTH]
+        mapping_status: unknown
+
+      - canonical_id: track.tempo_sync_sw
+        ui_label: Tempo Sync
+        type: enum
+        values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.tempo_sync_mode
+        ui_label: Tempo Sync Mode
+        type: enum
+        values: [PITCH, XFADE]
+        mapping_status: unknown
+
+      - canonical_id: track.play_level
+        ui_label: Play Level
+        type: integer
+        values: "0..200"
+        mapping_status: unknown
+
+      - canonical_id: track.pan
+        ui_label: Pan
+        type: range
+        values: "L50..CENTER..R50"
+        mapping_status: unknown
 
       - canonical_id: track.input_sources.mic_1_2
         ui_label: MIC 1/2
-        mapping_status: unknown
+        type: enum
         values: [OFF, ON]
+        mapping_status: unknown
 
       - canonical_id: track.input_sources.inst1_l_r
         ui_label: INST1 L/R
-        mapping_status: unknown
+        type: enum
         values: [OFF, ON]
+        mapping_status: unknown
 
       - canonical_id: track.input_sources.inst2_l_r
         ui_label: INST2 L/R
-        mapping_status: unknown
+        type: enum
         values: [OFF, ON]
+        mapping_status: unknown
 
       - canonical_id: track.input_sources.rhythm
         ui_label: Rhythm
-        mapping_status: unknown
+        type: enum
         values: [OFF, ON]
+        mapping_status: unknown
