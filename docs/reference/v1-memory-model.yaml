@@ -5,8 +5,8 @@ surface: reference
 firmware_version: "1.3"
 evidence: official
 confidence: medium
-source: "RC-600 Parameter Guide Ver. 1.3; RC-600 Owner’s Manual"
-last_verified: 2026-04-20
+source: "RC-600 Parameter Guide Ver. 1.3; RC-600 Owner's Manual"
+last_verified: 2026-04-21
 related:
   - meta-working-history-roadmap
 ---
@@ -43,11 +43,11 @@ memory_sections:
 
   - id: tracks
     ui_label: Tracks
-    official_section: "Memory Settings (LOOP) > TRACK 1–6"
+    official_section: "Memory Settings (LOOP) > TRACK 1-6"
     xml_scope: "database/mem/TRACK1..TRACK6"
     mapping_status: broad_scope_supported
     repeated: true
-    repeat_label: "Track 1–6"
+    repeat_label: "Track 1-6"
     fields:
       - canonical_id: track.reverse
         ui_label: Reverse
@@ -254,6 +254,71 @@ memory_sections:
             type: enum
             values: [OFF, ON]
 
+  - id: routing_track
+    ui_label: Track Output Routing
+    official_section: "System Settings (MENU) > OUTPUT > ROUTING > TRACK"
+    xml_scope: "database/mem/ROUTING"
+    mapping_status: structurally_supported
+    repeated: true
+    repeat_label: "Track 1-6"
+    notes:
+      - "Per-track output routing: each track independently ON/OFF per output bus."
+      - "Parameter Guide p. 11."
+      - "When STEREO LINK is ON, L and R are treated as one toggle per bus."
+      - "PHONES routing only visible when PHONES OUT SW is set to INDIVIDUAL."
+      - "Whether this is stored per-memory or per-system depends on PREFERENCE setting (p. 11)."
+      - "PREFERENCE is a system-level setting not yet modeled."
+    fields:
+      - canonical_id: routing.track.main
+        ui_label: MAIN
+        official_parameter_name: "MAIN-L, R"
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/ROUTING"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+        notes:
+          - "When STEREO LINK is ON, L and R are treated as one toggle."
+          - "Parameter Guide p. 11."
+
+      - canonical_id: routing.track.sub1
+        ui_label: SUB 1
+        official_parameter_name: "SUB1-L, R"
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/ROUTING"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: routing.track.sub2
+        ui_label: SUB 2
+        official_parameter_name: "SUB2-L, R"
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/ROUTING"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: routing.track.phones
+        ui_label: PHONES
+        official_parameter_name: PHONES
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/ROUTING"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+        notes:
+          - "Only visible/active when PHONES OUT SW is INDIVIDUAL (p. 12)."
+          - "Otherwise PHONES mirrors MAIN, SUB1, or SUB2."
+
   - id: rec
     ui_label: Record
     official_section: "Memory Settings (LOOP) > REC"
@@ -378,7 +443,7 @@ memory_sections:
 
       - canonical_id: play.all_start
         ui_label: All Start
-        official_parameter_name: ALL START TRK 1–6
+        official_parameter_name: ALL START TRK 1-6
         type: per_track_toggle
         values: ["Track1..Track6 OFF/ON"]
         xml_scope: "database/mem/PLAY"
@@ -389,7 +454,7 @@ memory_sections:
 
       - canonical_id: play.all_stop
         ui_label: All Stop
-        official_parameter_name: ALL STOP TRK 1–6
+        official_parameter_name: ALL STOP TRK 1-6
         type: per_track_toggle
         values: ["Track1..Track6 OFF/ON"]
         xml_scope: "database/mem/PLAY"
@@ -576,8 +641,10 @@ ui_v1:
     - rec
     - play
     - rhythm
+    - routing_track
 
   deferred_sections:
+    - routing_input_rhythm
     - input_fx
     - track_fx
     - assigns
@@ -592,8 +659,13 @@ experiment_priority:
     reason: "Recommended first binary mapping experiment."
   - parameter: track.play_mode
     reason: "Recommended first small-enum mapping experiment."
+  - parameter: routing.track.main
+    reason: "Recommended first routing bitmask experiment against ROUTING XML element."
 
 open_questions:
   - "Which exact TRACK fields map to reverse, one-shot, and play mode?"
   - "Which PLAY fields correspond to fade timing and loop length?"
   - "How should NAME characters be normalized into a single string encoder/decoder?"
+  - "Which ROUTING fields (A-S) map to per-track output assignment?"
+  - "Are ROUTING fields bitmask-packed (6 tracks per field) or individual?"
+  - "Does PREFERENCE=MEMORY cause routing values to be stored in MEMORYxxA.RC0, or are they always in SYSTEM1.RC0?"
