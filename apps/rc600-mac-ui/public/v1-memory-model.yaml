@@ -110,20 +110,38 @@ memory_sections:
         values: "L50..CENTER..R50"
         mapping_status: unknown
 
-      - canonical_id: track.input_sources.mic_1_2
-        ui_label: MIC 1/2
+      - canonical_id: track.input_sources.mic_1
+        ui_label: Mic 1
         type: enum
         values: [OFF, ON]
         mapping_status: unknown
 
-      - canonical_id: track.input_sources.inst1_l_r
-        ui_label: INST1 L/R
+      - canonical_id: track.input_sources.mic_2
+        ui_label: Mic 2
         type: enum
         values: [OFF, ON]
         mapping_status: unknown
 
-      - canonical_id: track.input_sources.inst2_l_r
-        ui_label: INST2 L/R
+      - canonical_id: track.input_sources.inst1_left
+        ui_label: Inst 1 Left
+        type: enum
+        values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.input_sources.inst1_right
+        ui_label: Inst 1 Right
+        type: enum
+        values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.input_sources.inst2_left
+        ui_label: Inst 2 Left
+        type: enum
+        values: [OFF, ON]
+        mapping_status: unknown
+
+      - canonical_id: track.input_sources.inst2_right
+        ui_label: Inst 2 Right
         type: enum
         values: [OFF, ON]
         mapping_status: unknown
