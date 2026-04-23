@@ -227,32 +227,82 @@ memory_sections:
         evidence: official
         confidence: medium
 
-      - canonical_id: track.input_sources
-        ui_label: Input Sources
-        official_parameter_name: INPUT
-        type: object
+      - canonical_id: track.input_sources.mic_1
+        ui_label: Mic 1
+        official_parameter_name: INPUT MIC 1
+        type: enum
+        values: [OFF, ON]
         xml_scope: "database/mem/TRACK{n}"
         xml_field: null
         mapping_status: unknown
         evidence: official
         confidence: medium
-        children:
-          - canonical_id: track.input_sources.mic_1_2
-            ui_label: MIC 1/2
-            type: enum
-            values: [OFF, ON]
-          - canonical_id: track.input_sources.inst1_l_r
-            ui_label: INST1 L/R
-            type: enum
-            values: [OFF, ON]
-          - canonical_id: track.input_sources.inst2_l_r
-            ui_label: INST2 L/R
-            type: enum
-            values: [OFF, ON]
-          - canonical_id: track.input_sources.rhythm
-            ui_label: Rhythm
-            type: enum
-            values: [OFF, ON]
+
+      - canonical_id: track.input_sources.mic_2
+        ui_label: Mic 2
+        official_parameter_name: INPUT MIC 2
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/TRACK{n}"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: track.input_sources.inst1_left
+        ui_label: Inst 1 Left
+        official_parameter_name: INPUT INST 1 LEFT
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/TRACK{n}"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: track.input_sources.inst1_right
+        ui_label: Inst 1 Right
+        official_parameter_name: INPUT INST 1 RIGHT
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/TRACK{n}"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: track.input_sources.inst2_left
+        ui_label: Inst 2 Left
+        official_parameter_name: INPUT INST 2 LEFT
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/TRACK{n}"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: track.input_sources.inst2_right
+        ui_label: Inst 2 Right
+        official_parameter_name: INPUT INST 2 RIGHT
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/TRACK{n}"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
+
+      - canonical_id: track.input_sources.rhythm
+        ui_label: Rhythm
+        official_parameter_name: INPUT RHYTHM
+        type: enum
+        values: [OFF, ON]
+        xml_scope: "database/mem/TRACK{n}"
+        xml_field: null
+        mapping_status: unknown
+        evidence: official
+        confidence: medium
 
   - id: routing_track
     ui_label: Track Output Routing

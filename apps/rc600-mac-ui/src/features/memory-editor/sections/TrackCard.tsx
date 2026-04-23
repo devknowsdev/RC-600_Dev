@@ -42,12 +42,23 @@ const SYNC_FIELDS = [
   'track.tempo_sync_mode',
 ]
 
+const INPUT_SOURCE_FIELDS = [
+  'track.input_sources.mic_1',
+  'track.input_sources.mic_2',
+  'track.input_sources.inst1_left',
+  'track.input_sources.inst1_right',
+  'track.input_sources.inst2_left',
+  'track.input_sources.inst2_right',
+  'track.input_sources.rhythm',
+]
+
 export function TrackCard({ trackIndex, fields, state, onFieldChange }: Props) {
   const playbackFields = fields.filter((f) => PLAYBACK_FIELDS.includes(f.canonical_id))
   const timingFields = fields.filter((f) => TIMING_FIELDS.includes(f.canonical_id))
   const syncFields = fields.filter((f) => SYNC_FIELDS.includes(f.canonical_id))
+  const inputSourceFields = fields.filter((f) => INPUT_SOURCE_FIELDS.includes(f.canonical_id))
   // Any field not in a named group falls through to a catch-all section
-  const knownIds = [...PLAYBACK_FIELDS, ...TIMING_FIELDS, ...SYNC_FIELDS]
+  const knownIds = [...PLAYBACK_FIELDS, ...TIMING_FIELDS, ...SYNC_FIELDS, ...INPUT_SOURCE_FIELDS]
   const otherFields = fields.filter((f) => !knownIds.includes(f.canonical_id))
 
   return (
@@ -83,6 +94,19 @@ export function TrackCard({ trackIndex, fields, state, onFieldChange }: Props) {
       {syncFields.length > 0 && (
         <Subsection title="Sync">
           {syncFields.map((field) => (
+            <FieldRenderer
+              key={field.canonical_id}
+              field={field}
+              value={state[field.canonical_id]}
+              onChange={(v) => onFieldChange(field.canonical_id, v)}
+            />
+          ))}
+        </Subsection>
+      )}
+
+      {inputSourceFields.length > 0 && (
+        <Subsection title="Input Sources">
+          {inputSourceFields.map((field) => (
             <FieldRenderer
               key={field.canonical_id}
               field={field}
